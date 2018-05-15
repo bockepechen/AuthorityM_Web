@@ -47,8 +47,8 @@
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
                              
-                            <Button @click="linkTO('updaterole')">修改</Button>
-                             <Button @click="destroy(item)">删除</Button>
+                            <Button @click.stop="linkTO('updaterole')">修改</Button>
+                             <Button @click.stop="destroy(item)">删除</Button>
                         </div>
                          
                      </div>
@@ -90,6 +90,11 @@
                 this.$router.push({
                     name:value
                 })
+            },
+            destroy(item){
+                let vm = this
+                this.modal1 = true
+               // this.list.splice(vm.list.indexOf(item),1)
             },
             change(index){
                 

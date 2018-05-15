@@ -46,10 +46,10 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button @click="linkTO('insertorganization')">添加</Button>
-                             <Button @click="change(index)">修改</Button>
-                             <Button @click="destroy(item)">删除</Button>
-                             <Button style="margin-top:5px" @click="linkTO('otoUser')">添加机构人</Button>
+                             <Button @click.stop="linkTO('insertorganization')">添加</Button>
+                             <Button @click.stop="change(index)">修改</Button>
+                             <Button @click.stop="destroy(item)">删除</Button>
+                             <Button style="margin-top:5px" @click.stop="linkTO('otoUser')">添加机构人</Button>
                         </div>
                          
                      </div>

@@ -61,23 +61,21 @@ import axios from 'axios';
             name: 'home_index'
         });
         let req = {
-
 	"jyau_content": {
 		"jyau_reqData": [{
-			"req_no": "CL048201802051125231351",
-			"account_content": "6fdefAERTYP",
-			"account_id": "systemman"
+			"req_no": " AU001201810231521335687",
+			"account_pwd": "6fdefAERTYP"
 		}],
 		"jyau_pubData": {
-			"operator_id": "O201801301417012263",
-			"ip_address": "10.2.0.116",
+			"oprator_id": "",
 			"account_id": "systemman",
+			"ip_address": "10.2.0.116",
 			"system_id": "10909"
 		}
 	}
 }
-
-         axios.post('api/api',req)
+//JSON.parse(req)
+        /*  axios.post('api/api',req)
         .then(function(res){
         
        console.log(res.data)
@@ -85,7 +83,7 @@ import axios from 'axios';
         })
         .catch(function(error){
         console.log(error)
-        })      
+        })   */  
 
        }
     }

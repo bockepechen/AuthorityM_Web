@@ -1,9 +1,9 @@
 <template>
 <div style="display:flex">
   <div style="flex:1"> 
-      <Input style="width:200px"></Input>
+      <Input style="width:200px" v-model="title" ></Input>
        
-          <ztreeItem :tree="yy"></ztreeItem>
+          <ztreeItem :tree="yy" ref="trees" :searchname="title"></ztreeItem>
           
         
      
@@ -15,7 +15,7 @@
             </tr>
             <tr>
                 <td><div>角色名称</div></td>
-                <td><div><Input style="width:200px"></Input><Button>查询</Button></div></td>
+                <td><div><Input style="width:200px" v-model="tabletitle"></Input><Button @click="tabletitlechange">查询</Button></div></td>
                 
             </tr>
             <tr>
@@ -27,14 +27,14 @@
                 <td><div>角色名称</div></td>
                 
             </tr>
-            <tr v-for="(item) in list" :key="item" draggable='true'  @dragstart='dragStart' @dragenter='dragEnter' @dragend='dragEnd' :data-name="item">
+            <tr v-for="(item,index) in list" :key="index" draggable='true'  @dragstart='dragStart' @dragenter='dragEnter' @dragend='dragEnd' :data-name="item.name" v-if="!tableshow[index]">
                 <td   >
                     <div>
                         
-                         <span   >{{item}}</span>
+                         <span   >{{item.name}}</span>
                     </div>
                 </td>
-                <td><div>{{item}}</div></td>
+                <td><div>{{item.name}}</div></td>
                
             </tr>
         </table>
@@ -49,37 +49,11 @@ import ztreeItem from "@/views/menu/parent/childtree"
     
     data(){
       return{
-         list:["张三","李四","王五","赵六",4,5,6],
-        xx:{
-            name: 'My Tree',
-            children: [
-              { name: '机构1' ,
-              children: [
-                  {name: "人员1"},
-                  { name: '人员2' },
-                  { name: '人员3' },
-                  { name: '人员4'}
-                ]
-              },
-              { name: '机构2' ,
-               children: [
-                  {name: '人员5'},
-                  { name: '人员6' },
-                  { name: '人员7' },
-                  { name: '人员8'}
-                ]
-              },
-              {
-                name: '机构3',
-                children: [
-                  {name: '人员9'},
-                  { name: '人员10' },
-                  { name: '人员11' },
-                  { name: '人员12'}
-                ]
-              }
-            ]
-          }
+         list:[{ name: '张三'},{ name: '李四'},{ name: '王五'},{ name: '赵六'},{ name: '1'},{ name: '2'},{ name: '3'}],
+         title:"",
+         tabletitle:"",
+         zz : this.$store.state.app.tree,
+         tableshow:[]
       }
     },
     props:{
@@ -89,10 +63,33 @@ import ztreeItem from "@/views/menu/parent/childtree"
        yy(){
           return this.$store.state.app.tree
         }
+        
     },
     methods:{
+      
       wode(){
          console.log("msg")
+      },
+      
+      tabletitlechange(){
+        let vm = this
+          console.log(this.tabletitle)
+          if(vm.tabletitle==""){
+            for(let i=0;i<vm.list.length;i++){
+               
+                  vm.$set(vm.tableshow,i,false)
+               
+            }
+          }else{
+            for(let i=0;i<vm.list.length;i++){
+                if(vm.list[i].name.indexOf(vm.tabletitle)>-1){
+                  vm.$set(vm.tableshow,i,false)
+                }else{
+                   vm.$set(vm.tableshow,i,true)
+                }
+            }
+           
+          }
       },
       dragStart(e){
           e.dataTransfer.effectAllowed = "move";
@@ -140,7 +137,7 @@ import ztreeItem from "@/views/menu/parent/childtree"
     },
     created(){
       let vm = this
-      localStorage.setItem("tree",JSON.stringify(vm.xx))
+      //localStorage.setItem("tree",JSON.stringify(vm.xx))
     },
     mounted(){
       this.$on("oxxe",function(){

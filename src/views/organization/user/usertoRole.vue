@@ -1,5 +1,5 @@
 <template>
-<div>
+<div @click="closeTag">
    <Card class="home-main">
         <p slot="title">
             <Icon type="person"></Icon>
@@ -42,12 +42,12 @@
                     </div>
                    </td>
                  <td>
-                     <div @click="showTag(item)">{{item}}点我呀</div>
+                     <div @click.stop="showTag(item)">{{item}}点我呀</div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button >删除</Button>
-                            <Button @click="change(index)">修改</Button>
+                             <Button  @click.stop="destroy(item)">删除</Button>
+                            <Button @click.stop="change(index)">修改</Button>
                             <Button>详情</Button>
                         </div>
                          
@@ -61,6 +61,14 @@
     text-align: center;">
       <Page :total="100"></Page>
     </div>
+     <Modal
+        v-model="modal1"
+        title="Common Modal dialog box title"
+        @on-ok="ok"
+        @on-cancel="cancel">
+        <p>确定删除？</p>
+    
+    </Modal>
   </Card>
 </div>
 </template>
@@ -70,7 +78,8 @@
             return{
                 list:['a','b','c','d','e','f','g','h','i','j'],
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
-                choose:''
+                choose:'',
+                modal1: false
             }
         },
         methods:{
@@ -87,6 +96,14 @@
                 this.$set(this.editable,index,!this.editable[index])
                 
                 
+            },
+            destroy(item){
+                let vm = this
+                this.modal1 = true
+               // this.list.splice(vm.list.indexOf(item),1)
+            },
+            closeTag(){
+                 this.choose="";
             },
             showTag(item){
                 var box=document.getElementById(item);       

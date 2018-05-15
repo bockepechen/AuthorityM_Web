@@ -21,6 +21,11 @@ export const locking = {
   name: 'locking',
   component: () => import('@/views/lockscreen/components/locking-page.vue')
 };
+export const testApi = {
+    path: '/testApi',
+    name: 'testApi',
+    component: () => import('@/views/testApi/testApi.vue')
+  };
 export const otherRouter = {
   path: '/',
   name: 'otherRouter',
@@ -219,6 +224,7 @@ export const routers = [
   otherRouter,
   locking,
   ...appRouter,
+  testApi,
   page404,
 
 ];

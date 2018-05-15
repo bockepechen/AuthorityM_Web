@@ -37,34 +37,98 @@ let toData=""
    data(){
      return{
        list:["张三","李四","王五","赵六",4,5],
-        xx:{
+         xx:{
             name: 'My Tree',
             children: [
               { name: '机构1' ,
               children: [
-                  {name: "人员1"},
-                  { name: '人员2' },
-                  { name: '人员3' },
-                  { name: '人员4'}
+                  {name: "人员1-1"},
+                  { name: '人员1-2' },
+                  { name: '人员1-3' },
+                  { name: '人员1-4'}
                 ]
               },
               { name: '机构2' ,
                children: [
-                  {name: '人员5'},
-                  { name: '人员6' },
-                  { name: '人员7' },
-                  { name: '人员8'}
+                 {name: "人员2-1"},
+                  { name: '人员2-2' },
+                  { name: '人员2-3' },
+                  { name: '人员2-4'}
                 ]
               },
               {
                 name: '机构3',
                 children: [
-                  {name: '人员9'},
-                  { name: '人员10' },
-                  { name: '人员11' },
-                  { name: '人员12'}
+                 {name: "人员3-1"},
+                  { name: '人员3-2' },
+                  { name: '人员3-3' },
+                  { name: '人员3-4'}
+                ]
+              },
+              {
+                name: '机构4',
+                children: [
+                 {name: "人员4-1"},
+                  { name: '人员4-2' },
+                  { name: '人员4-3' },
+                  { name: '人员4-4'}
+                ]
+              },
+              {
+                name: '机构5',
+                children: [
+                  {name: "人员5-1"},
+                  { name: '人员5-2' },
+                  { name: '人员5-3' },
+                  { name: '人员5-4'}
+                ]
+              },
+              {
+                name: '机构6',
+                children: [
+                  {name: "人员6-1"},
+                  { name: '人员6-2' },
+                  { name: '人员6-3' },
+                  { name: '人员6-4'}
+                ]
+              },
+              {
+                name: '机构7',
+                children: [
+                 {name: "人员7-1"},
+                  { name: '人员7-2' },
+                  { name: '人员7-3' },
+                  { name: '人员7-4'}
+                ]
+              },
+              {
+                name: '机构8',
+                children: [
+                 {name: "人员8-1"},
+                  { name: '人员8-2' },
+                  { name: '人员8-3' },
+                  { name: '人员8-4'}
+                ]
+              },
+              {
+                name: '机构9',
+                children: [
+                 {name: "人员9-1"},
+                  { name: '人员9-2' },
+                  { name: '人员9-3' },
+                  { name: '人员9-4'}
+                ]
+              },
+              {
+                name: '机构10',
+                children: [
+                 {name: "人员10-1"},
+                  { name: '人员10-2' },
+                  { name: '人员10-3' },
+                  { name: '人员10-4'}
                 ]
               }
+
             ]
           },
        editable:[false,false,false,false,false,false],
@@ -124,10 +188,12 @@ let toData=""
      tree
    },
    created(){
-     this.$store.commit("settree",this.xx)
+     
    },
    mounted(){
-     console.log("yy",this.yy)
+    
+     this.$store.commit("settree",this.xx)
+     
    },
    methods:{
      xxx(){

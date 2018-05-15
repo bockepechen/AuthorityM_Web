@@ -1,6 +1,10 @@
 <template>
 <div @click="closeTag">
    <Card class="home-main">
+       <p slot="title">
+            <Icon type="person"></Icon>
+            用户管理
+        </p>
     <div style="text-align: center;
     margin: 20px;">
       <!-- <div style="display:flex;width:600px;">
@@ -42,9 +46,9 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button @click="linkTO('insertuser')">添加</Button>
-                            <Button @click="change(index)">修改</Button>
-                              <Button @click="destroy(item)">删除</Button>
+                             <Button @click.stop="linkTO('insertuser')">添加</Button>
+                            <Button @click.stop="change(index)">修改</Button>
+                              <Button @click.stop="destroy(item)">删除</Button>
                            
                         </div>
                          
