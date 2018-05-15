@@ -32,6 +32,16 @@ module.exports = {
     // set this to false - it *may* help
     // https://vue-loader.vuejs.org/en/options.html#cachebusting
     cacheBusting: true,
+    proxyTable: {
+      '/api':{
+          target:'http://10.2.0.116:8099/AuthorityM_Serv/login',
+          changeOrigin: true,
+          pathRewrite: {
+            '^/api': ''
+          }
+      }
+    },
+    //跨越访问结束
 
     cssSourceMap: true
   },

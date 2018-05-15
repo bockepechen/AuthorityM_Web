@@ -1,0 +1,63 @@
+<template>
+<div>
+     <h4>角色对应人员信息管理</h4>
+    <div>
+        <table>
+            <tr>
+                <th>查询条件</th>
+            </tr>
+            <tr>
+                <td>登录名称</td>
+                <td></td>
+                <td>操作员名称</td>
+                <td></td>
+            </tr>
+             <tr>
+                <td>所属分公司</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+             <tr>
+                <td>查询</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+             <tr>
+                <td>查询结果</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+             <tr>
+                <td>选择</td>
+                <td>登陆名称</td>
+                <td>操作员名称</td>
+                <td>所属分公司</td>
+            </tr>
+             <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+             <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</div> 
+</template>
+<script>
+    export default{
+      
+    }
+</script>
+<style scoped>
+
+</style>
+
