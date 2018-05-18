@@ -4,26 +4,57 @@
       <div class="form-content">
            <Form  label-position="left" :label-width="100">
               <FormItem label="机构代码">
-                  <Input></Input>
+                  <Input v-model="form.code"></Input>
               </FormItem>
               <FormItem label="机构名称">
-                  <Input></Input>
+                  <Input v-model="form.name"></Input>
               </FormItem>
              
           </Form>
       </div>
       <div class="control">
-          <Button >保存</Button>
+          <Button @click="submit">保存</Button>
           <Button>取消</Button>
       </div>
    </Card>
 </div>
 </template>
 <script>
+import axios from 'axios';
     export default{
       data(){
           return{
-              list:['男','女']
+              form:{
+                  name:"",
+                  code:""
+              }
+          }
+      },
+      methods:{
+          submit(){
+            let vm = this
+            let req = {
+                "jyau_content": {
+                    "jyau_reqData": [{
+                        "req_no": " AU001201810231521335687",
+                        "org_id": "",
+                        "org_code": vm.form.code,
+                        "org_name": vm.form.name,
+                    }],
+                    "jyau_pubData": {
+                        "operator_id": "1",
+                        "account_id": "systemman",
+                        "ip_address": "10.2.0.116",
+                        "system_id": "10909"
+                      }
+                    }
+             }
+            console.log("数据",req);
+            axios.post('api/org/saveOrg',req).then(function(res){
+                console.log(res.data)
+            }).catch(function(error){
+                console.log(error)
+            }) 
           }
       }
     }

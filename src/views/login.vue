@@ -39,7 +39,7 @@ import axios from 'axios';
     data(){
       return{
          formInline: {
-                    user: 'admin',
+                    user: 'modifyOperator',
                     password: 'admin'
                 },
           ruleInline: {
@@ -56,6 +56,7 @@ import axios from 'axios';
     },
     methods:{
       handleSubmit(name) {
+        let vm = this
         localStorage.setItem("UserName", 'admin');
         this.$router.push({
             name: 'home_index'
@@ -64,7 +65,7 @@ import axios from 'axios';
 	"jyau_content": {
 		"jyau_reqData": [{
 			"req_no": " AU001201810231521335687",
-			"account_pwd": "6fdefAERTYP"
+			"account_pwd": vm.user
 		}],
 		"jyau_pubData": {
 			"oprator_id": "",
@@ -74,8 +75,8 @@ import axios from 'axios';
 		}
 	}
 }
-//JSON.parse(req)
-        /*  axios.post('api/api',req)
+
+         axios.post('api/login',req)
         .then(function(res){
         
        console.log(res.data)
@@ -83,7 +84,7 @@ import axios from 'axios';
         })
         .catch(function(error){
         console.log(error)
-        })   */  
+        })    
 
        }
     }

@@ -91,9 +91,9 @@
                     </div>
                 <div style="padding: 20px;">
                      
-                        <keep-alive>
+                        
                             <router-view style="overflow:hidden"></router-view>
-                        </keep-alive>
+                        
                    
 
                 </div>

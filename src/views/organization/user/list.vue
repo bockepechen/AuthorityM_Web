@@ -31,23 +31,23 @@
              <tr v-for="(item,index) in list" :key="index">
                  
                  <td><div>
-                        <Input v-show="editable[index]==true" v-model="list[index]" @keyup.enter="changeEditable"></Input>
-                         <span v-show="editable[index]==false"  >{{item}}</span>
+                        
+                         <span>{{item.account}}</span>
                     </div>
                  </td>
                  <td>
                    <div>
-                     <Input v-show="editable[index]==true" v-model="list[index]" @keyup.enter="changeEditable"></Input>
-                     <span v-show="editable[index]==false"  >{{item}}</span>
+                     
+                     <span>{{item.name}}</span>
                     </div>
                    </td>
                  <td>
-                     <div @click.stop="showTag(item)">{{item}}点我呀</div>
+                     <div @click.stop="showTag(item)"><!-- {{item.operator_id}} -->点我呀</div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button @click.stop="linkTO('insertuser')">添加</Button>
-                            <Button @click.stop="change(index)">修改</Button>
+                             <Button @click.stop="linkTO('insertuser',item.operator_id)">添加</Button>
+                            <Button @click.stop="linkTO('updateuser',item.operator_id)">修改</Button>
                               <Button @click.stop="destroy(item)">删除</Button>
                            
                         </div>
@@ -74,42 +74,68 @@
 </div>
 </template>
 <script>
+import axios from 'axios';
   export default{
     data(){
             return{
-                list:['a','b','c','d','e','f','g','h','i','j'],
-                editable:[false,false,false,false,false,false,false,false,false,false,false],
+                list:[],
                 choose:'',
-                modal1: false
+                modal1: false,
+                current:''
             }
         },
         methods:{
-            changeEditable(){
-              console.log("修改后的回车事件")
+            init(){
+                let vm = this;
+                let req =  {
+                  "jyau_content": {
+                    "jyau_reqData": [{
+                      "req_no": " AU001201810231521335687"
+                    }],
+                    "jyau_pubData": {
+                      "operator_id": "1",
+                      "account_id": "systemman",
+                      "ip_address": "10.2.0.116",
+                      "system_id": "10909"
+                    }
+                  }
+                }
+                axios.post('api/operator',req).then(function(res){ 
+                     console.log(res.data)
+                     vm.list = res.data.jyau_content.jyau_resData[0].oper_list
+                    }).catch(function(error){
+                        console.log(error)
+                        }) 
             },
-            linkTO(value){
+            linkTO(name,id){
                 this.$router.push({
-                    name:value
-                })
+                    name:name,
+                    params:{id:id}
+                }) 
             },
             destroy(item){
                 let vm = this
                 this.modal1 = true
-               // this.list.splice(vm.list.indexOf(item),1)
-            },
-            gonext(value){
-                this.$router.push({
-                    name:value
-                })
-            },
-            change(index){
-                
-                this.$set(this.editable,index,!this.editable[index])
-                
-                
+                this.current = item
+               
             },
             ok () {
-               
+                let vm = this;
+                let req = {
+                  "jyau_content": {
+                    "jyau_reqData": [{
+                      "req_no": " AU001201810231521335687"
+                    }],
+                    "jyau_pubData": {
+                      "operator_id": vm.current.operator_id,
+                      "account_id": "systemman",
+                      "ip_address": "10.2.0.116",
+                      "system_id": "10909"
+                    }
+                  }
+                } 
+                axios.post('api/operator/deleteOperator',req).then(function(res){vm.init()}).catch(function(error){console.log(error)}) 
+         
             },
             cancel () {
                 
@@ -146,6 +172,9 @@
                 
             }
         },
+        mounted(){
+            this.init();
+        }
 
   }
 </script>

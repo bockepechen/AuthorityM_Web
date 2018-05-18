@@ -1,6 +1,6 @@
 <template>
 <div style="display:flex">
-  <div style="flex:1"> 
+  <div style="flex:1;overflow-y: scroll;height:800px"> 
       <Input style="width:200px" v-model="title" ></Input>
        
           <ztreeItem :tree="yy" ref="trees" :searchname="title"></ztreeItem>
@@ -11,23 +11,23 @@
   <div style="flex:1"> 
     <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
             <tr>
-                <th colspan="2"><div> 角色查询条件</div></th>
+                <th colspan="2"><div> 用户查询条件</div></th>
             </tr>
             <tr>
-                <td><div>角色名称</div></td>
-                <td><div><Input style="width:200px" v-model="tabletitle"></Input><Button @click="tabletitlechange">查询</Button></div></td>
+                <td><div>用户名称</div></td>
+                <td><div><Input style="width:200px" v-model="tabletitle" :on-change="tabletitlechange()"></Input></div></td>
                 
             </tr>
             <tr>
-                <td colspan="2"><div>角色查询结果</div></td>
+                <td colspan="2"><div>用户查询结果</div></td>
                 
             </tr>
             <tr>
-                <td><div>角色编号</div></td>
-                <td><div>角色名称</div></td>
+                <td><div>用户账号</div></td>
+                <td><div>用户名称</div></td>
                 
             </tr>
-            <tr v-for="(item,index) in list" :key="index" draggable='true'  @dragstart='dragStart' @dragenter='dragEnter' @dragend='dragEnd' :data-name="item.name" v-if="!tableshow[index]">
+            <tr v-for="(item,index) in list" :key="index" draggable='true'  @dragstart='dragStart' @dragenter='dragEnter' @dragend='dragEnd' :data-name="item.name" v-if="item.tableshow">
                 <td   >
                     <div>
                         
@@ -49,11 +49,21 @@ import ztreeItem from "@/views/menu/parent/childtree"
     
     data(){
       return{
-         list:[{ name: '张三'},{ name: '李四'},{ name: '王五'},{ name: '赵六'},{ name: '1'},{ name: '2'},{ name: '3'}],
+         list:[
+                { name: '张三',tableshow:true},
+                { name: '李四',tableshow:true},
+                { name: '王五',tableshow:true},
+                { name: '赵六',tableshow:true},
+                { name: '1',tableshow:true},
+                { name: '2',tableshow:true},
+                { name: '3',tableshow:true}
+              ],
          title:"",
          tabletitle:"",
-         zz : this.$store.state.app.tree,
-         tableshow:[]
+         
+         tableshow:[],
+         store: null,
+         root: null,
       }
     },
     props:{
@@ -73,19 +83,19 @@ import ztreeItem from "@/views/menu/parent/childtree"
       
       tabletitlechange(){
         let vm = this
-          console.log(this.tabletitle)
+        
           if(vm.tabletitle==""){
-            for(let i=0;i<vm.list.length;i++){
+             for(let i=0;i<vm.list.length;i++){
+               vm.list[i].tableshow=true
+                 // vm.$set(vm.tableshow,i,false)
                
-                  vm.$set(vm.tableshow,i,false)
-               
-            }
+            }  
           }else{
             for(let i=0;i<vm.list.length;i++){
                 if(vm.list[i].name.indexOf(vm.tabletitle)>-1){
-                  vm.$set(vm.tableshow,i,false)
+                 vm.list[i].tableshow=true
                 }else{
-                   vm.$set(vm.tableshow,i,true)
+                  vm.list[i].tableshow=false
                 }
             }
            
@@ -108,7 +118,7 @@ import ztreeItem from "@/views/menu/parent/childtree"
         let root = this.$store.state.app.tree
         let from = this.$store.state.app.righttable
         let to = this.$store.state.app.leftli
-        let dataset={name:from};
+        let dataset={name:from,open:true,searchopen:true};
         
           for(let i=0;i<root.children.length;i++){
           
@@ -136,13 +146,32 @@ import ztreeItem from "@/views/menu/parent/childtree"
 
     },
     created(){
-      let vm = this
-      //localStorage.setItem("tree",JSON.stringify(vm.xx))
+      /* let vm = this
+      vm.store = {
+        data: vm.yy,
+        root:{
+          data:vm.yy
+         
+        }
+      }
+      vm.root = vm.store.root.data;
+      console.log(vm.store) */
     },
     mounted(){
       this.$on("oxxe",function(){
         console.log("xxx")
       })
+      /* let vm = this
+      vm.store = {
+        data: vm.yy,
+        root:{
+          data:vm.yy
+         
+        }
+      }
+      vm.root = vm.store.root.data;
+      console.log(vm.store) */
+
     },
     components:{
       ztreeItem

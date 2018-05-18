@@ -1,6 +1,6 @@
 <template>
 <div>
-   <Card class="">
+   <Card class="" style="max-width:1200px">
       <p slot="title">
             <Icon type="person"></Icon>
             机构管理
@@ -39,93 +39,125 @@ let toData=""
        list:["张三","李四","王五","赵六",4,5],
          xx:{
             name: 'My Tree',
+            searchopen:true,
+            expanded: false,
             children: [
               { name: '机构1' ,
+              open:true,
+              searchopen:true,
+              expanded: false,
               children: [
-                  {name: "人员1-1"},
-                  { name: '人员1-2' },
-                  { name: '人员1-3' },
-                  { name: '人员1-4'}
+                  {name: "人员1-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员1-2',open:true ,searchopen:true,expanded: false},
+                  { name: '人员1-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员1-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               { name: '机构2' ,
+               open:true,
+               searchopen:true,
+               expanded: false,
                children: [
-                 {name: "人员2-1"},
-                  { name: '人员2-2' },
-                  { name: '人员2-3' },
-                  { name: '人员2-4'}
+                 {name: "人员2-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员2-2',open:true ,searchopen:true,expanded: false},
+                  { name: '人员2-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员2-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构3',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                 {name: "人员3-1"},
-                  { name: '人员3-2' },
-                  { name: '人员3-3' },
-                  { name: '人员3-4'}
+                 {name: "人员3-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员3-2',open:true ,searchopen:true,expanded: false},
+                  { name: '人员3-3',open:true,searchopen:true ,expanded: false},
+                  { name: '人员3-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构4',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                 {name: "人员4-1"},
-                  { name: '人员4-2' },
-                  { name: '人员4-3' },
-                  { name: '人员4-4'}
+                 {name: "人员4-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员4-2',open:true ,searchopen:true,expanded: false},
+                  { name: '人员4-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员4-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构5',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                  {name: "人员5-1"},
-                  { name: '人员5-2' },
-                  { name: '人员5-3' },
-                  { name: '人员5-4'}
+                  {name: "人员5-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员5-2' ,open:true,searchopen:true,expanded: false},
+                  { name: '人员5-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员5-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构6',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                  {name: "人员6-1"},
-                  { name: '人员6-2' },
-                  { name: '人员6-3' },
-                  { name: '人员6-4'}
+                  {name: "人员6-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员6-2',open:true ,searchopen:true,expanded: false},
+                  { name: '人员6-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员6-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构7',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                 {name: "人员7-1"},
-                  { name: '人员7-2' },
-                  { name: '人员7-3' },
-                  { name: '人员7-4'}
+                 {name: "人员7-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员7-2',open:true ,searchopen:true,expanded: false},
+                  { name: '人员7-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员7-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构8',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                 {name: "人员8-1"},
-                  { name: '人员8-2' },
-                  { name: '人员8-3' },
-                  { name: '人员8-4'}
+                 {name: "人员8-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员8-2' ,open:true,searchopen:true,expanded: false},
+                  { name: '人员8-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员8-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构9',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                 {name: "人员9-1"},
-                  { name: '人员9-2' },
-                  { name: '人员9-3' },
-                  { name: '人员9-4'}
+                 {name: "人员9-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员9-2' ,open:true,searchopen:true,expanded: false},
+                  { name: '人员9-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员9-4',open:true,searchopen:true,expanded: false}
                 ]
               },
               {
                 name: '机构10',
+                 open:true,
+                 searchopen:true,
+                 expanded: false,
                 children: [
-                 {name: "人员10-1"},
-                  { name: '人员10-2' },
-                  { name: '人员10-3' },
-                  { name: '人员10-4'}
+                 {name: "人员10-1",open:true,searchopen:true,expanded: false},
+                  { name: '人员10-2' ,open:true,searchopen:true,expanded: false},
+                  { name: '人员10-3',open:true ,searchopen:true,expanded: false},
+                  { name: '人员10-4',open:true,searchopen:true,expanded: false}
                 ]
               }
 

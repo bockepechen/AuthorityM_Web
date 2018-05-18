@@ -43,7 +43,7 @@ import axios from 'axios';
                   pwd:"",
                   status:"",
                   ifAdmin:false,
-                  type:"01",
+                  type:"02",
               }
           }
       },
@@ -60,7 +60,7 @@ import axios from 'axios';
                         "pwd": vm.form.pwd,
                         "status": vm.form.status,
                         "ifAdmin": vm.form.ifAdmin?"1":"0",
-                        "type": "01"
+                        "type": "02"
                     }],
                     "jyau_pubData": {
                         "operator_id": "1",
@@ -77,6 +77,39 @@ import axios from 'axios';
                 console.log(error)
             })  
         }, 
+        init(){
+            let vm = this
+            let id = this.$route.params.id;  
+            //console.log(id)
+            let req = {
+                    "jyau_content": {
+                      "jyau_reqData": [{
+                        "req_no": " AU001201810231521335687"
+                      }],
+                      "jyau_pubData": {
+                        "operator_id": id,
+                        "account_id": "systemman",
+                        "ip_address": "10.2.0.116",
+                        "system_id": "10909"
+                      }
+                    }
+                  }
+
+          axios.post('api/operator/displayOperator',req).then(function(res){
+              vm.form.account=res.data.jyau_content.jyau_resData[0].account;
+              vm.form.name=res.data.jyau_content.jyau_resData[0].name;
+              vm.form.pwd=res.data.jyau_content.jyau_resData[0].pwd;
+              vm.form.status=(res.data.jyau_content.jyau_resData[0].status=="正常")?"01":"02";
+              vm.form.ifAdmin=(res.data.jyau_content.jyau_resData[0].ifAdmin=="1")?false:true;
+              console.log(res.data,vm.form)
+              }).catch(function(error){
+                  console.log(error)
+                  })
+
+        }
+      },
+      mounted(){
+          this.init()
       }
     }
 </script>

@@ -166,9 +166,10 @@ export const appRouter = [
     children:[
         { path: 'listorganization', meta:{title:'机构管理'}, name: 'listorganization', icon: 'compose', component: () => import('@/views/organization/list.vue') },
         { path: 'insertorganization', meta:{title:'新增机构'}, name: 'insertorganization', icon: 'compose', component: () => import('@/views/organization/insert.vue') },  
-        { path: 'updateorganization', meta:{title:'修改机构'}, name: 'updateorganization', icon: 'compose', component: () => import('@/views/organization/insert.vue') },  
+        { path: 'updateorganization/:id', meta:{title:'修改机构'}, name: 'updateorganization', icon: 'compose', component: () => import('@/views/organization/update.vue') },  
         { path: 'listuser', meta:{title:'用户管理'}, name: 'listuser', icon: 'compose', component: () => import('@/views/organization/user/list.vue') }, 
         { path: 'insertuser', meta:{title:'新增用户'}, name: 'insertuser', icon: 'compose', component: () => import('@/views/organization/user/insert.vue') }, 
+        { path: 'updateuser/:id', meta:{title:'修改用户'}, name: 'updateuser', icon: 'compose', component: () => import('@/views/organization/user/update.vue') }, 
         { path: 'otoUser', meta:{title:'新增用户'}, name: 'otoUser', icon: 'compose', component: () => import('@/views/organization/otoUser.vue') }, 
         { path: 'organizationtoUser', meta:{title:'机构-用户管理'}, name: 'organizationtoUser', icon: 'compose', component: () => import('@/views/organization/organizationtoUser.vue') }, 
         { path: 'usertoRole', meta:{title:'用户-角色管理'}, name: 'usertoRole', icon: 'compose', component: () => import('@/views/organization/user/usertoRole.vue') }, 
