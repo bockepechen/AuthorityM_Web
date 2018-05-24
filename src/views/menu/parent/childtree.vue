@@ -3,7 +3,7 @@
   <ul class="ul">
      
         <li :data-name="i.name" v-for="(i, m) in tree.children" :key="m" class="item"  :class="{'tree-hidden':!i.searchopen,'tree-block':i.expanded }">
-          <span  @click="toggle(m)" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend.prevent='dragEnd' :data-name="i.name">{{i.name}}</span>
+          <span  @click="toggle(m)" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend.prevent='dragEnd' :data-name="i.name" :data-id="i.id">{{i.name}}</span>
          <Icon type="arrow-right-b" v-if="(!i.open)&&i.children"></Icon>
          <Icon type="arrow-down-b" v-if="i.open&&i.children"></Icon>
          <span v-if="!i.children" @click="removeItem(i)" ><Icon type="ios-minus" style="color:red"></Icon></span>
@@ -27,17 +27,13 @@
  
 </template>
 <script>
-let fromData = ''
-let toData=""
+let fromData = {}
+let toData={}
  export default{
         name:'treeNode',
        
         data(){
           return{
-            open: [],
-             list:["张三","李四","王五","赵六",4,5]
-            
-           
           }
         },
         props:{
@@ -101,14 +97,13 @@ let toData=""
             
                
           },
-          wode(){
-            console.log("model") 
           
-          },
           toggle: function (m) {
+           
             let vm = this
             vm.tree.children[m].open = !vm.tree.children[m].open
-              
+             console.log("展开",m,vm.tree.children[m].open)
+           
           },
           search(name){
             console.log("search")
@@ -123,15 +118,22 @@ let toData=""
           dragStart(e){
             //拖拽效果
             e.dataTransfer.effectAllowed = "move";
-            fromData = e.target.dataset.name
-           
+            fromData.child_name = e.target.dataset.name
+            fromData.child_id = e.target.dataset.id
+            fromData.parent_name = this.tree.name
+            fromData.parent_id = this.tree.id
+            console.log("dragStart",e.target.dataset.name,e.target.dataset.id,this.tree.name,this.tree.id)
             e.dataTransfer.setData("nottext", e.target.innerHTML);
             
-            return true
+           
           },
           dragEnter(e){
            
-            toData = e.target.textContent
+            toData.child_name = e.target.dataset.name
+            toData.child_id = e.target.dataset.id
+            toData.parent_name = this.tree.name
+            toData.parent_id = this.tree.id
+            
             if(this.$store.state.app.righttable==""){
 
             }else{
@@ -157,24 +159,28 @@ let toData=""
           },
           order(from,to){
              let vm = this;
+            // console.log("from,to",from,to)
              this.check(from,to);
             
             
 
           },
           removeItem(item){
-            console.log(item)
-             let root = this.$store.state.app.tree
+            console.log("removeItem",item)
+            let vm = this 
+             let root = vm.tree
               for(let i=0;i<root.children.length;i++){
-                for(let j=0;j<root.children[i].children.length;j++){
-                  if(item.name==root.children[i].children[j].name){
+                
+                  if(item.id==root.children[i].id){
                    
-                    root.children[i].children.splice(j,1)
+                    root.children.splice(i,1)
+                    
                     }
                   
-                }
+                
               }
-             this.$store.commit("settree",root)
+             //用户机构删除的操作
+             console.log("删除后的tree",this.$store.state.app.tree)
           },
           checktable(from,to){
               
@@ -199,6 +205,7 @@ let toData=""
               this.$store.commit("settree",root)
               
               
+              
            
 
             
@@ -210,30 +217,39 @@ let toData=""
               let root = this.$store.state.app.tree
               
               let dataset;
-              if((from.indexOf("机构")>-1)||(to.indexOf("机构")>-1)){
+              /* if((from.parent_name.indexOf("机构")>-1)||(to.indexOf("机构")>-1)){
                 return
-              }
+              } 
               if(from==to){
                 return
-              }
+              } */
               for(let i=0;i<root.children.length;i++){
-                for(let j=0;j<root.children[i].children.length;j++){
-                  if(from==root.children[i].children[j].name){
-                    dataset = root.children[i].children[j]
-                    root.children[i].children.splice(j,1)
+                if(from.parent_id==root.children[i].id){
+                   for(let j=0;j<root.children[i].children.length;j++){
+                      if(from.child_id==root.children[i].children[j].id){
+                          dataset = root.children[i].children[j]
+                          root.children[i].children.splice(j,1)
+                          //用户机构删除的操作
+                        
+                          }
+                      
                     }
-                  
+
                 }
+               
               }
                 for(let i=0;i<root.children.length;i++){
-                
-                  for(let j=0;j<root.children[i].children.length;j++){
+                 if(to.parent_id==root.children[i].id){
+                   for(let j=0;j<root.children[i].children.length;j++){
                    
-                    if(to==root.children[i].children[j].name){
-                    
+                    if(to.child_id==root.children[i].children[j].id){
+                        //用户机构增加的操作
                         root.children[i].children.push(dataset)
                     }
                   }
+
+                 }
+                  
               } 
              
               this.$store.commit("settree",root)

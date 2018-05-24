@@ -17,7 +17,7 @@ router.beforeEach((to,from,next) => {
   if(to.name=='login'){
     next(true);
   }else{
-    if(localStorage.getItem("UserName")=='admin'){
+    if(!(localStorage.getItem("UserName")=="")){
       next(true);
     }else{
       

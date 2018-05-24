@@ -11,9 +11,9 @@
                                 </Col>
                                 <Col span="16" style="padding-left:6px;">
                                     <Row class-name="made-child-con-middle" type="flex" align="middle">
-                                        <div class="organization">所属机构1</div>
+                                        <div class="organization">{{org}}</div>
                                         <div>
-                                            <b class="card-user-infor-name">Admin</b>
+                                            <b class="card-user-infor-name">{{username}}</b>
                                             <p>super admin</p>
                                         </div>
                                     </Row>
@@ -22,7 +22,7 @@
                             <div class="line-gray"></div>
                             <Row class="margin-top-8">
                                 <Col span="8"><p class="notwrap">上次登录时间:</p></Col>
-                                <Col span="16" class="padding-left-8">2017.09.12-13:32:20</Col>
+                                <Col span="16" class="padding-left-8">{{last_login}}</Col>
                             </Row>
                             <Row class="margin-top-8">
                                 <Col span="8"><p class="notwrap">上次登录地点:</p></Col>
@@ -33,8 +33,8 @@
         </div>
         <div v-if="!organization">
            <div v-for="(item,index) in list" :key="index" class="organization-choose">
-               <div @click="chooseO(item)" class="organization-choose-item">
-                   <div class="organization-choose-item-content">{{item}}</div>
+               <div @click="chooseO(item.org_name)" class="organization-choose-item">
+                   <div class="organization-choose-item-content">{{item.org_name}}</div>
               </div>
                
            </div>
@@ -42,21 +42,54 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
   export default{
     name:'home',
     data(){
         return{
             organization:false,
-            list:["所属机构1","所属机构2"]
+            list:[]
+        }
+    },
+    computed:{
+        username(){
+                return localStorage.getItem("UserName")
+            },
+        last_login(){
+            return JSON.parse(localStorage.getItem("User")).jyau_content.jyau_resData[0].last_login
+        },
+        org(){
+            return localStorage.getItem("organization")
         }
     },
     methods:{
         init(){
-           
+            
             let vm = this
+            vm.list = JSON.parse(localStorage.getItem("User")).jyau_content.jyau_resData[0].org_list
+
             if(localStorage.getItem("organization")){
                 vm.organization = true
             }
+            /* let req = {
+                    "jyau_content": {
+                        "jyau_reqData": [{
+                            "req_no": " AU001201810231521335687"
+                        }],
+                        "jyau_pubData": {
+                            "operator_id": "1",
+                            "account_id": "systemman",
+                            "ip_address": "10.2.0.116",
+                            "system_id": "10909"
+                        }
+                    }
+                }
+            axios.post('api/emporg',req).then(function(res){
+                console.log(res.data)
+            }).catch(function(e){
+                console.log(e)
+            }) */
+
         },
         chooseO(item){
             localStorage.setItem("organization",item)

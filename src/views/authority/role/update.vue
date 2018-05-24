@@ -3,33 +3,98 @@
    <Card class="home-main">
         <p slot="title">
             <Icon type="person"></Icon>
-            机构管理
+             角色管理
         </p>
       <div class="form-content">
            <Form  label-position="left" :label-width="100">
               <FormItem label="角色编号">
-                  <Input></Input>
+                  <Input v-model="form.code"></Input>
               </FormItem>
               <FormItem label="角色名称">
-                  <Input></Input>
+                  <Input v-model="form.name"></Input>
               </FormItem>
               
              
           </Form>
       </div>
       <div class="control">
-          <Button >保存</Button>
+          <Button @click="submit">保存</Button>
           <Button>取消</Button>
       </div>
   </Card>
 </div>
 </template>
 <script>
+import axios from 'axios';
     export default{
       data(){
           return{
-              list:['男','女']
+              form:{
+                  name:"",
+                  code:""
+              }
           }
+      },
+      methods:{
+          submit(){
+              let vm = this
+              let id = this.$route.params.id;
+              let req = {
+                "jyau_content": {
+                    "jyau_reqData": [
+                    {
+                        "req_no": "AU012201802051125231351",
+                        "role_id": id,
+                        "role_code":  vm.form.code,
+                        "role_name":  vm.form.name,
+                    }
+                    ],
+                    "jyau_pubData": {
+                    "operator_id": "1",
+                    "ip_address": "10.2.0.116",
+                    "account_id": "systemman",
+                    "system_id": "10909"
+                    }
+                 }
+                }  
+              axios.post("api/role/saveRole",req).then(function(res){
+                    console.log(res.data)
+                    vm.$Message.success('新建成功!');
+                }).catch(function(err){
+                    vm.$Message.error('新建失败!');
+                })
+
+          },
+          init(){
+              let vm = this
+              let id = this.$route.params.id;
+              let req =  {
+                "jyau_content": {
+                    "jyau_reqData": [
+                    {
+                        "req_no": "AU014201802051125231351",
+                        "role_id": id
+                    }
+                    ],
+                    "jyau_pubData": {
+                    "operator_id": "1",
+                    "ip_address": "10.2.0.116",
+                    "account_id": "systemman",
+                    "system_id": "10909"
+                    }
+                }
+                }
+
+              axios.post("api/role/showRole",req).then(function(res){
+                  vm.form.code=res.data.jyau_content.jyau_resData[0].role_code
+                  vm.form.name=res.data.jyau_content.jyau_resData[0].role_name
+              }).catch(function(error){
+
+              })
+          }
+      },
+      mounted(){
+          this.init()
       }
     }
 </script>

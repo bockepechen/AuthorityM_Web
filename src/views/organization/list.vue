@@ -28,7 +28,7 @@
                  <th><div>操作</div></th>
              </tr>
             
-             <tr v-for="(item,index) in list" :key="index">
+             <tr v-for="(item,index) in list" :key="index" v-if="currentpage-10<=index&&index<currentpage">
                  
                  <td><div>
                         <!-- <Input v-show="editable[index]==true" v-model="list[index]" @keyup.enter="changeEditable"></Input> -->
@@ -43,14 +43,14 @@
                     </div>
                    </td>
                  <td>
-                     <div  ref="div" @click.stop="showTag(item)">点我呀</div>
+                     <div  ref="div" @click.stop="showTag(item)"><!-- {{item.org_id}} -->点我呀</div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
                              <Button @click.stop="linkTO('insertorganization',item.org_id)">添加</Button>
                              <Button @click.stop="linkTO('updateorganization',item.org_id)">修改</Button>
                              <Button @click.stop="destroy(item)">删除</Button>
-                             <Button style="margin-top:5px" @click.stop="linkTO('otoUser')">添加机构人</Button>
+                             <Button style="margin-top:5px" @click.stop="linkTO('otoUser',item.org_id)">添加机构人</Button>
                         </div>
                          
                      </div>
@@ -61,7 +61,7 @@
     </div>
     <div style="    margin-top: 30px;
     text-align: center;">
-      <Page :total="100"></Page>
+      <Page :total="list.length" @on-change="pages" ></Page>
     </div>
     <Modal
         v-model="modal1"
@@ -79,11 +79,12 @@ import axios from 'axios';
   export default{
     data(){
             return{
-                list:['a','b','c','d','e','f','g','h','i','j'],
+                list:[],
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
                 choose:'',
                 current:'',
-                modal1: false
+                modal1: false,
+                currentpage:10
             }
         },
         methods:{
@@ -129,6 +130,11 @@ import axios from 'axios';
                 this.$set(this.editable,index,!this.editable[index])
                 
                 
+            },
+            pages(page){
+                
+                this.currentpage = Number(page+"0")
+                console.log(this.currentpage)
             },
             ok () {
                 let vm = this;

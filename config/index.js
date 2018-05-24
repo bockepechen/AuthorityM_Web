@@ -34,7 +34,7 @@ module.exports = {
     cacheBusting: true,
     proxyTable: {
       '/api':{
-          target:'http://10.2.0.116:8099/AuthorityM_Serv/login',
+          target:'http://10.2.0.101:8182/AuthorityM_Serv',
           changeOrigin: true,
           pathRewrite: {
             '^/api': ''

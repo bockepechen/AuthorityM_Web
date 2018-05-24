@@ -51,6 +51,7 @@ import axios from 'axios';
         submit(){
             
             let vm = this
+             let id = this.$route.params.id;  
             let req = {
                 "jyau_content": {
                     "jyau_reqData": [{
@@ -63,7 +64,7 @@ import axios from 'axios';
                         "type": "02"
                     }],
                     "jyau_pubData": {
-                        "operator_id": "1",
+                        "operator_id": id,
                         "account_id": "systemman",
                         "ip_address": "10.2.0.116",
                         "system_id": "10909"
@@ -72,8 +73,10 @@ import axios from 'axios';
              }
             console.log("数据",req);
             axios.post('api/operator/modifyOperator',req).then(function(res){
+                vm.$Message.success('修改成功!');
                 console.log(res.data)
             }).catch(function(error){
+                 vm.$Message.error('修改失败!');
                 console.log(error)
             })  
         }, 

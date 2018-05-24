@@ -1,4 +1,5 @@
 import {otherRouter, appRouter} from '@/router/router';
+import axios from 'axios';
 /* 主要包括三个变量 当前打开页面 展示路由的list 和所有路由的list */
 const app = {
   state:{
@@ -29,7 +30,15 @@ const app = {
         state.currentPath = pathArr;
     },
     settree(state,value){
+      state.tree=null
       state.tree=value
+    },
+    gettree(state){
+      console.log("gettree",state.tree)
+      return state.tree
+    },
+    inittree(state,value){
+
     },
     setleftli(state,value){
       state.leftli=value
@@ -72,5 +81,72 @@ const app = {
     //左菜单部分
 
   },
+  actions: {
+    increment (context) {
+     // state.commit('inittree')
+     let req =   {
+      "jyau_content": {
+        "jyau_reqData": [{
+          "req_no": " AU001201810231521335687"
+        }],
+        "jyau_pubData": {
+          "operator_id": "1",
+          "account_id": "systemman",
+          "ip_address": "10.2.0.116",
+          "system_id": "10909"
+        }
+      }
+    }
+    return new Promise(function(resolve,reject){
+         resolve( axios.post('api/emporg',req).then(function(res){ 
+         //return state.tree
+         
+          let value=res.data.jyau_content.jyau_resData[0]
+          context.state.tree.name="myTree"
+          context.state.tree.searchopen=true
+          context.state.tree.expanded=false
+          context.state.tree.children=[]
+          for(let i =0;i<(value.orgemp_list.length-1);i++){
+            let obj={}
+            obj.name=value.orgemp_list[i].org_name
+            obj.open=true
+            obj.searchopen=true
+            obj.expanded=false
+          
+            if(value.orgemp_list[i].emp_list){
+              obj.children=[]
+              for(let j=0;j<value.orgemp_list[i].emp_list.length;j++){
+                let child = {}
+                child.name=value.orgemp_list[i].emp_list[j].name
+                child.open=true
+                child.searchopen=true
+                child.expanded=false
+                obj.children.push(child)
+              }
+            }
+            context.state.tree.children.push(obj)
+          }
+          console.log("state.tree",context.state.tree)
+          return context.state.tree
+        }).catch(function(error){
+            
+        }) )
+    })
+    
+   
+    
+    },
+    actionB ({ dispatch, commit }) {
+      return dispatch('increment').then((res) => {
+        console.log("actionB",res)
+        commit('gettree')
+        return res
+      })
+    },
+    asyncsetTree(context,value){
+      context.state.tree = value
+      return context.state.tree 
+    }
+  }
 }
 export default app;

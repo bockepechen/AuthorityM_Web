@@ -3,7 +3,7 @@
    <Card class="" style="max-width:1200px">
       <p slot="title">
             <Icon type="person"></Icon>
-            机构管理
+            机构管理1
         </p>
     <div style="display:flex">
       <div style="flex:1" >
@@ -30,6 +30,7 @@
 </div>
 </template>
 <script>
+import axios from 'axios';
 import tree from "@/views/menu/parent/tree.vue"
 let fromData = ''
 let toData=""
@@ -164,6 +165,7 @@ let toData=""
             ]
           },
        editable:[false,false,false,false,false,false],
+       yy:{},
         data6: [{
           id: 1,
           label: '机构 1',
@@ -212,9 +214,9 @@ let toData=""
      }
    },
    computed:{
-     yy(){
+    /*  yy(){
        return this.$store.state.app.tree
-     }
+     } */
    },
    components:{
      tree
@@ -223,9 +225,53 @@ let toData=""
      
    },
    mounted(){
+     let vm = this
+     let req =   {
+      "jyau_content": {
+        "jyau_reqData": [{
+          "req_no": " AU001201810231521335687"
+        }],
+        "jyau_pubData": {
+          "operator_id": "1",
+          "account_id": "systemman",
+          "ip_address": "10.2.0.116",
+          "system_id": "10909"
+        }
+      }
+    }
+    axios.post('api/emporg',req).then(function(res){
+      let value=res.data.jyau_content.jyau_resData[0]
+      let obtTree={}
+         obtTree.name="myTree"
+          obtTree.searchopen=true
+          obtTree.expanded=false
+          obtTree.children=[]
+          for(let i =0;i<(value.orgemp_list.length-1);i++){
+            let obj={}
+            obj.name=value.orgemp_list[i].org_name
+            obj.open=true
+            obj.searchopen=true
+            obj.expanded=false
+            obj.id=value.orgemp_list[i].org_id
+          
+            if(value.orgemp_list[i].emp_list){
+              obj.children=[]
+              for(let j=0;j<value.orgemp_list[i].emp_list.length;j++){
+                let child = {}
+                child.name=value.orgemp_list[i].emp_list[j].name
+                child.open=true
+                child.searchopen=true
+                child.expanded=false
+                 child.id=value.orgemp_list[i].emp_list[j].operator_id
+                obj.children.push(child)
+              }
+            }
+            obtTree.children.push(obj)
+          }
+       vm.$store.commit("settree",obtTree)
+       vm.yy=vm.$store.state.app.tree
+    })
     
-     this.$store.commit("settree",this.xx)
-     
    },
    methods:{
      xxx(){
@@ -253,36 +299,7 @@ let toData=""
         
 
       },
-     /*  handleDragStart(node, ev) {
-        console.log('drag start', node);
-      },
-      handleDragEnter(draggingNode, dropNode, ev) {
-        console.log('tree drag enter: ', dropNode.label);
-      },
-      handleDragLeave(draggingNode, dropNode, ev) {
-        console.log('tree drag leave: ', dropNode.label);
-      },
-      handleDragOver(draggingNode, dropNode, ev) {
-        console.log('tree drag over: ', dropNode.label);
-      },
-      handleDragEnd(draggingNode, dropNode, dropType, ev) {
-        console.log('tree drag end: ', dropNode && dropNode.label, dropType);
-        let vm = this
-        console.log("vm",vm.data6)
-      },
-      handleDrop(draggingNode, dropNode, dropType, ev) {
-        console.log('tree drop: ', dropNode.label, dropType);
-      },
-      allowDrop(draggingNode, dropNode, type) {
-        if (dropNode.data.label === '二级 3-1') {
-          return type !== 'inner';
-        } else {
-          return true;
-        }
-      },
-      allowDrag(draggingNode) {
-        return draggingNode.data.label.indexOf('三级 3-1-1') === -1;
-      } */
+    
    }
    
  } 

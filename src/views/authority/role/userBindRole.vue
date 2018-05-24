@@ -1,6 +1,10 @@
 <template>
   <div>
    <Card class="home-main">
+      <p slot="title">
+            <Icon type="person"></Icon>
+           新增绑定
+        </p>
         <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
             <tr>
                 <th colspan="4"><div> 查询条件</div></th>
@@ -40,10 +44,11 @@
                
                 
             </tr>
-            <tr v-for="(item,index) in list" :key="index"  v-if="currentpage-10<=index&&index<currentpage">
-                <td><div> <Checkbox  v-model="checked[index]" ></Checkbox></div></td>
-                <td ><div>{{item.operator_id}}</div></td>
-                <td><div>{{item.name}}</div></td>
+           
+            <tr v-for="(item,index) in list" :key="index" v-if="currentpage-10<=index&&index<currentpage">
+                <td><div> <Checkbox  v-model="checked[index]" :label="item.operator_id" @on-change="change(item.operator_id,index)"></Checkbox></div></td>
+                <td ><div>{{item.account_id}}</div></td>
+                <td><div>{{item.account_name}}</div></td>
                 
             </tr>
            
@@ -68,9 +73,12 @@ import axios from 'axios';
           return{
               list:[],
               initTable:[],
-              checked:[],
               indeterminate: false,
               checkAll: false,
+              checked:[],
+              ncheckAllGroup: [],
+              checkAllGroup:[],
+              userliet:[],
               currentpage:10
              
           }
@@ -79,11 +87,16 @@ import axios from 'axios';
           changeEditable(){
               console.log("changeEditable")
           },
-          change(index){
-              console.log(index)
-              this.$set(this.editable,index,!this.editable[index])
-                  //this.editable[index] = true
-              console.log(this.editable)
+          change(value,index){
+              
+              
+
+              
+          },
+           pages(page){
+                
+                this.currentpage = Number(page+"0")
+                console.log(this.currentpage)
           },
           handleCheckAll(){
                 if (this.indeterminate) {
@@ -94,34 +107,70 @@ import axios from 'axios';
                 this.indeterminate = false;
 
                 if (this.checkAll) {
-                   for(let i =0;i<this.checked.length;i++){
-                    this.checked[i]=true
-                    }
+                 for(let i =0;i<this.checked.length;i++){
+                   this.checked[i]=true
+                 }
+                  
+                   // this.checkAllGroup = ['香蕉', '苹果', '西瓜'];
                 } else {
                    for(let i =0;i<this.checked.length;i++){
-                    this.checked[i]=false
-                    }
+                   this.checked[i]=false
+                 }
+                    
                 }
           },
-          submit(){
-              let vm = this
-                let id = this.$route.params.id
-                let userList =[];
-                for(let i=0;i<vm.list.length;i++){
-                if(vm.checked[i]==true){
-                    let obj ={}
-                    obj.oper_id = vm.list[i].oper_id
-                    if(vm.list[i].org_id==null){
-                    obj.org_id =""
-                    }else{
-                    obj.org_id =vm.list[i].org_id
+          init(){
+              let vm = this;
+               let id = this.$route.params.id;
+               let req = {
+                      "jyau_content": {
+                        "jyau_reqData": [
+                          {
+                            "req_no": "AU002201810231521335687",
+                            "role_id": id
+                          }
+                        ],
+                        "jyau_pubData": {
+                          "operator_id": "1",
+                          "ip_address": "10.2.0.116",
+                          "account_id": "systemman",
+                          "system_id": "10909"
+                        }
+                      }
                     }
-                    
-                    userList.push(obj)
+
+
+                axios.post('api/emporg/showNoRoleUser',req).then(function(res){ 
+                     console.log("data",res.data)
+                     vm.list = res.data.jyau_content.jyau_resData[0].users_data
+                     vm.initTable = res.data.jyau_content.jyau_resData[0].users_data
+                     for(let i = 0; i<vm.list.length;i++){
+                       vm.checked.push(false)
+                     }
+                    }).catch(function(error){
+                        console.log(error)
+                    }) 
+
+          },
+          submit(){
+            let vm = this
+            let id = this.$route.params.id
+            let userList =[];
+            for(let i=0;i<vm.list.length;i++){
+              if(vm.checked[i]==true){
+                let obj ={}
+                obj.oper_id = vm.list[i].oper_id
+                if(vm.list[i].org_id==null){
+                  obj.org_id =""
+                }else{
+                  obj.org_id =vm.list[i].org_id
                 }
-                }
-                if(userList.length==0){return}
-                 let req =  {
+                
+                userList.push(obj)
+              }
+            }
+            if(userList.length==0){return}
+            let req =  {
                   "jyau_content": {
                     "jyau_reqData": [
                       {
@@ -139,48 +188,14 @@ import axios from 'axios';
                     }
                   }
                 }
-                axios.post("api/emporg/addUserRole",req).then(function(res){
-                    console.log(res.data)
-                vm.$Message.success('修改成功!');
-                }).catch(function(error){
-                    vm.$Message.error('修改失败!');
-                    console.log(error)
-                })
-
-          },
-          pages(page){
                 
-                this.currentpage = Number(page+"0")
-                console.log(this.currentpage)
-          },
-          init(){
-              let vm = this;
-              let id = this.$route.params.id
-                let req =  {
-                        "jyau_content": {
-                            "jyau_reqData": [{
-                                "req_no": " AU001201810231521335687",
-                                "org_id": id
-                            }],
-                            "jyau_pubData": {
-                                "operator_id": "1",
-                                "account_id": "systemman",
-                                "ip_address": "10.2.0.116",
-                                "system_id": "10909"
-                            }
-                        }
-                    }
-
-                axios.post('api/emporg/notOrgUser',req).then(function(res){ 
-                     //console.log("data",res.data)
-                     vm.list = res.data.jyau_content.jyau_resData[0].notorg_list
-                     vm.initTable = res.data.jyau_content.jyau_resData[0].notorg_list
-                       for(let i = 0; i<vm.list.length;i++){
-                        vm.checked.push(false)
-                        }
-                    }).catch(function(error){
-                        console.log(error)
-                    }) 
+              axios.post("api/emporg/addUserRole",req).then(function(res){
+                console.log(res.data)
+              vm.$Message.success('修改成功!');
+              }).catch(function(error){
+                 vm.$Message.error('修改失败!');
+                console.log(error)
+              })
 
           }
       },

@@ -27,14 +27,14 @@
                 <td><div>用户名称</div></td>
                 
             </tr>
-            <tr v-for="(item,index) in list" :key="index" draggable='true'  @dragstart='dragStart' @dragenter='dragEnter' @dragend='dragEnd' :data-name="item.name" v-if="item.tableshow">
+            <tr v-for="(item,index) in list" :key="index" draggable='true'  @dragstart='dragStart' @dragenter='dragEnter' @dragend='dragEnd' :data-name="item.name" >
                 <td   >
                     <div>
                         
-                         <span   >{{item.name}}</span>
+                         <span >{{item.account}}</span>
                     </div>
                 </td>
-                <td><div>{{item.name}}</div></td>
+                <td><div>{{item.name}}<!-- <div @click="mtm(item.operator_id)">{{item.operator_id}}绑定机构</div> --></div></td>
                
             </tr>
         </table>
@@ -43,24 +43,17 @@
 </template>
 <script>
 import ztreeItem from "@/views/menu/parent/childtree"
-
+import axios from 'axios';
   export default{
     name:'tree',
     
     data(){
       return{
-         list:[
-                { name: '张三',tableshow:true},
-                { name: '李四',tableshow:true},
-                { name: '王五',tableshow:true},
-                { name: '赵六',tableshow:true},
-                { name: '1',tableshow:true},
-                { name: '2',tableshow:true},
-                { name: '3',tableshow:true}
-              ],
+         list:[],
+         initTable:[],
          title:"",
+        
          tabletitle:"",
-         
          tableshow:[],
          store: null,
          root: null,
@@ -73,44 +66,86 @@ import ztreeItem from "@/views/menu/parent/childtree"
        yy(){
           return this.$store.state.app.tree
         }
-        
     },
     methods:{
-      
-      wode(){
-         console.log("msg")
-      },
-      
+       init(){
+                //右侧用户数据初始化
+                let vm = this;
+                let req =  {
+                  "jyau_content": {
+                    "jyau_reqData": [{
+                      "req_no": " AU001201810231521335687"
+                    }],
+                    "jyau_pubData": {
+                      "operator_id": "1",
+                      "account_id": "systemman",
+                      "ip_address": "10.2.0.116",
+                      "system_id": "10909"
+                    }
+                  }
+                }
+                axios.post('api/operator',req).then(function(res){ 
+                     //console.log("data",res.data)
+                     vm.list = res.data.jyau_content.jyau_resData[0].oper_list
+                     vm.initTable = res.data.jyau_content.jyau_resData[0].oper_list
+                    }).catch(function(error){
+                        console.log(error)
+                    }) 
+               
+       },
       tabletitlechange(){
         let vm = this
-        
-          if(vm.tabletitle==""){
-             for(let i=0;i<vm.list.length;i++){
-               vm.list[i].tableshow=true
-                 // vm.$set(vm.tableshow,i,false)
-               
-            }  
-          }else{
-            for(let i=0;i<vm.list.length;i++){
-                if(vm.list[i].name.indexOf(vm.tabletitle)>-1){
-                 vm.list[i].tableshow=true
-                }else{
-                  vm.list[i].tableshow=false
-                }
-            }
-           
+         this.list = this.initTable
+        // this.list = this.search(this.list, {name: this.name});
+          
+      },
+      search (data, argumentObj) {
+          let res = data;
+          let dataClone = data;
+          for (let argu in argumentObj) {
+              if (argumentObj[argu].length > 0) {
+                  res = dataClone.filter(d => {
+                      return d[argu].indexOf(argumentObj[argu]) > -1;
+                  });
+                  dataClone = res;
+              }
           }
+          return res;
       },
       dragStart(e){
           e.dataTransfer.effectAllowed = "move";
           
           e.dataTransfer.setData("item", e.target);
-          let tab = e.target.dataset.name
+          let tab = {}
+          tab.name = e.target.dataset.name
+          tab.id = e.target.dataset.id
           this.$store.commit("setrighttable",tab)
       },
       dragEnter(e){
         
         console.log("我进去了",e.target)
+      },
+      mtm(userid){
+        let vm = this
+        let req = {
+            "jyau_content": {
+              "jyau_reqData": [{
+                "req_no": " AU001201810231521335687",
+                "org_id": "OG201805240947521098"
+              }],
+              "jyau_pubData": {
+                "operator_id": userid,
+                "account_id": "systemman",
+                "ip_address": "10.2.0.116",
+                "system_id": "10909"
+              }
+            }
+          }
+        axios.post("api/emporg/addOperator",req).then(function(res){
+           console.log(res.data)
+        }).catch(function(error){
+          console.log(error)
+        })
       },
       dragEnd(e){
          let vm = this;
@@ -118,18 +153,14 @@ import ztreeItem from "@/views/menu/parent/childtree"
         let root = this.$store.state.app.tree
         let from = this.$store.state.app.righttable
         let to = this.$store.state.app.leftli
-        let dataset={name:from,open:true,searchopen:true};
+        let dataset={name:from.name,id:from.id,open:true,searchopen:true};
         
           for(let i=0;i<root.children.length;i++){
-          
-            for(let j=0;j<root.children[i].children.length;j++){
-              
-              if(to==root.children[i].children[j].name){
-                /*  console.log("to",root.children[i].children[j]) */
-                  /*  root.children[i].children.splice(j, 0, dataset);  */
-                  root.children[i].children.push(dataset)
-              }
-            }
+           if(to.parent_id==root.children[i].id){
+              root.children[i].children.push(dataset)
+
+           }
+            
         } 
         
         this.$store.commit("settree",root)
@@ -146,31 +177,14 @@ import ztreeItem from "@/views/menu/parent/childtree"
 
     },
     created(){
-      /* let vm = this
-      vm.store = {
-        data: vm.yy,
-        root:{
-          data:vm.yy
-         
-        }
-      }
-      vm.root = vm.store.root.data;
-      console.log(vm.store) */
+      
     },
     mounted(){
       this.$on("oxxe",function(){
         console.log("xxx")
       })
-      /* let vm = this
-      vm.store = {
-        data: vm.yy,
-        root:{
-          data:vm.yy
-         
-        }
-      }
-      vm.root = vm.store.root.data;
-      console.log(vm.store) */
+      this.init();
+      
 
     },
     components:{

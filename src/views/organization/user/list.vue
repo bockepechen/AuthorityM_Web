@@ -17,8 +17,8 @@
           <span>图标</span>
         </div>
       </div> -->
-      <Input  icon="search" placeholder="请输入登陆账号搜索" style="width: 300px"></Input>
-      <Input  icon="search" placeholder="请输入姓名搜索" style="width: 300px"></Input>
+      <Input  icon="search" placeholder="请输入登陆账号搜索" v-model="account" @on-change="findAccount" style="width: 300px"></Input>
+      <Input  icon="search" placeholder="请输入姓名搜索" v-model="name"  @on-change="findName" style="width: 300px"></Input>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
@@ -28,7 +28,7 @@
                  <th><div>热点操作区域</div></th>
              </tr>
             
-             <tr v-for="(item,index) in list" :key="index">
+             <tr v-for="(item,index) in list" :key="index" v-if="currentpage-10<=index&&index<currentpage">
                  
                  <td><div>
                         
@@ -42,7 +42,7 @@
                     </div>
                    </td>
                  <td>
-                     <div @click.stop="showTag(item)"><!-- {{item.operator_id}} -->点我呀</div>
+                     <div @click.stop="showTag(item)"><!-- {{item.operator_id}} --> 点我呀</div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
@@ -60,7 +60,7 @@
     </div>
     <div style="    margin-top: 30px;
     text-align: center;">
-      <Page :total="100"></Page>
+      <Page :total="list.length" @on-change="pages" :current="currentpath"></Page>
     </div>
     <Modal
         v-model="modal1"
@@ -81,7 +81,13 @@ import axios from 'axios';
                 list:[],
                 choose:'',
                 modal1: false,
-                current:''
+                current:'',
+                currentpath:1,
+                currentpage:10,
+                name:"",
+                account:"",
+                initTable:[]
+                
             }
         },
         methods:{
@@ -101,11 +107,35 @@ import axios from 'axios';
                   }
                 }
                 axios.post('api/operator',req).then(function(res){ 
-                     console.log(res.data)
+                     //console.log("data",res.data)
                      vm.list = res.data.jyau_content.jyau_resData[0].oper_list
+                     vm.initTable = res.data.jyau_content.jyau_resData[0].oper_list
                     }).catch(function(error){
                         console.log(error)
-                        }) 
+                    }) 
+            },
+            search (data, argumentObj) {
+                let res = data;
+                let dataClone = data;
+                for (let argu in argumentObj) {
+                    if (argumentObj[argu].length > 0) {
+                        res = dataClone.filter(d => {
+                            return d[argu].indexOf(argumentObj[argu]) > -1;
+                        });
+                        dataClone = res;
+                    }
+                }
+                return res;
+            },
+            findAccount(){
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = this.search(this.list, {account: this.account});
+            },
+            findName(){
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = this.search(this.list, {name: this.name});
             },
             linkTO(name,id){
                 this.$router.push({
@@ -118,6 +148,11 @@ import axios from 'axios';
                 this.modal1 = true
                 this.current = item
                
+            },
+            pages(page){
+                
+                this.currentpage = Number(page+"0")
+                console.log(this.currentpage)
             },
             ok () {
                 let vm = this;

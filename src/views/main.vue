@@ -81,7 +81,7 @@
                     <span @click="fullscreeen(value)">全屏</span>
                     <span @click="lockscreen()">锁屏</span>
                     <div style="width: 20px;display: inline-block;"><lock-screen></lock-screen></div>
-                    <span>admin</span>
+                    <span>{{username}}</span>
                     <span @click="logout()">退出</span>
 
 
@@ -125,6 +125,9 @@ import axios from 'axios';
         computed: {
             showFullScreenBtn () {
                 return window.navigator.userAgent.indexOf('MSIE') < 0;
+            },
+            username(){
+                return localStorage.getItem("UserName")
             }
         },
         methods:{

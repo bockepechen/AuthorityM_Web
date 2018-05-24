@@ -1,21 +1,21 @@
 <template>
-  <div @click="closeTag">
+<div @click="closeTag">
    <Card class="home-main">
         <p slot="title">
             <Icon type="person"></Icon>
-           角色管理
+           菜单管理
         </p>
     <div style="text-align: center;
     margin: 20px;">
-      
-      <Input  icon="search" placeholder="请输入角色名称搜索" style="width: 600px"></Input>
      
+      
+      <Input  icon="search" placeholder="请输入菜单名称搜索" style="width: 600px"></Input>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
              <tr>
-                  <th><div>角色编号<Icon type="arrow-down-a"></Icon></div></th>
-                 <th><div>角色名称<Icon type="arrow-down-a"></Icon></div></th>
+                  <th><div>菜单名称<Icon type="arrow-down-a"></Icon></div></th>
+                 <th><div>是否子菜单<Icon type="arrow-down-a"></Icon></div></th>
                  <th><div>热点操作区域</div></th>
              </tr>
             
@@ -23,13 +23,13 @@
                  
                  <td><div>
                        
-                         <span>{{item.role_code}}</span>
+                         <span>{{item.mu_name}}</span>
                     </div>
                  </td>
                  <td>
                    <div>
                     
-                     <span>{{item.role_name}}</span>
+                     <span>{{item.if_leaf}}</span>
                     </div>
                    </td>
                  <td>
@@ -37,9 +37,12 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                              <Button @click.stop="linkTO('insertrole',item.role_id)">新增</Button>
-                            <Button @click.stop="linkTO('updaterole',item.role_id)">修改</Button>
+                              <Button @click.stop="linkTO('insertmenu',item.mu_id)">新增</Button>
+                              <Button @click.stop="linkTO('updatemenu',item.mu_id)">修改</Button>
                              <Button @click.stop="destroy(item)">删除</Button>
+                            
+                            
+                            
                         </div>
                          
                      </div>
@@ -52,7 +55,7 @@
     text-align: center;">
       <Page :total="100"></Page>
     </div>
-    <Modal
+      <Modal
         v-model="modal1"
         title="Common Modal dialog box title"
         @on-ok="ok"
@@ -71,7 +74,7 @@ import axios from 'axios';
                 list:[],
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
                 choose:'',
-                current:'',
+                 current:'',
                 modal1: false
             }
         },
@@ -80,40 +83,33 @@ import axios from 'axios';
                 let vm = this
                 let req = {
                     "jyau_content": {
-                        "jyau_reqData": [
-                        {
-                            "req_no": "AU011201810231521335687"
-                        }
-                        ],
+                        "jyau_reqData": [{
+                            "req_no": " AU001201810231521335687"
+                        }],
                         "jyau_pubData": {
-                        "operator_id": "1",
-                        "ip_address": "10.2.0.116",
-                        "account_id": "systemman",
-                        "system_id": "10909"
+                            "operator_id": "1",
+                            "account_id": "systemman",
+                            "ip_address": "10.2.0.116",
+                            "system_id": "10909"
                         }
                     }
-                    }
+                }
 
-                axios.post("api/role",req).then(function(res){
+                axios.post("api/menu",req).then(function(res){
                     console.log(res.data)
-                    vm.list = res.data.jyau_content.jyau_resData[0].role_data
-                }).catch(function(){
+                     vm.list = res.data.jyau_content.jyau_resData[0].menu_list
+                }).catch(function(error){
 
                 })
+
             },
             changeEditable(){
               console.log("修改后的回车事件")
             },
-            linkTO(name,id){
+            gonext(value){
                 this.$router.push({
-                    name:name,
-                    params:{id:id}
+                    name:value
                 })
-            },
-            destroy(item){
-                let vm = this
-                this.modal1 = true
-                this.current = item
             },
             change(index){
                 
@@ -121,27 +117,41 @@ import axios from 'axios';
                 
                 
             },
+            linkTO(name,id){
+                console.log(name,id)
+                this.$router.push({
+                    name:name,
+                    params:{id:id}
+                }) 
+            },
             ok () {
-                 let vm = this;
+                let vm = this;
                 let req = {
-                  "jyau_content": {
-                    "jyau_reqData": [{
-                      "req_no": " AU001201810231521335687",
-                      "role_id": vm.current.role_id
-                    }],
-                    "jyau_pubData": {
-                      "operator_id": "1",
-                      "account_id": "systemman",
-                      "ip_address": "10.2.0.116",
-                      "system_id": "10909"
+                    "jyau_content": {
+                        "jyau_reqData": [{
+                            "req_no": " AU001201810231521335687",
+                             "menu_id": vm.current.mu_id
+
+                        }],
+                        "jyau_pubData": {
+                            "operator_id": "1",
+                            "account_id": "systemman",
+                            "ip_address": "10.2.0.116",
+                            "system_id": "10909"
+                        }
                     }
-                  }
-                } 
-                axios.post('api/role/delRole',req).then(function(res){vm.init()}).catch(function(error){console.log(error)}) 
-               
+                }
+ 
+                axios.post('api/menu/deleteMenu',req).then(function(res){vm.init()}).catch(function(error){console.log(error)}) 
             },
             cancel () {
                 
+            },
+            destroy(item){
+                let vm = this
+                this.modal1 = true
+                this.current = item
+               // this.list.splice(vm.list.indexOf(item),1)
             },
             closeTag(){
                  this.choose="";
@@ -201,7 +211,7 @@ z-Index:-999
     position: absolute;
     border-color: transparent;
     border-style: solid;
-        border-width: 6px;
+    border-width: 6px;
 }
 </style>
 

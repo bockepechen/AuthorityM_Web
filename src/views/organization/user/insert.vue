@@ -73,8 +73,10 @@ import axios from 'axios';
             console.log("数据",req);
             axios.post('api/operator/modifyOperator',req).then(function(res){
                 console.log(res.data)
+                vm.$Message.success('新建成功!');
             }).catch(function(error){
-                console.log(error)
+                this.$Message.error('新建失败!');
+                vm.log(error)
             })  
         }, 
       }

@@ -1,15 +1,13 @@
 <template>
-  <div @click="closeTag">
+<div @click="closeTag">
    <Card class="home-main">
         <p slot="title">
             <Icon type="person"></Icon>
-           角色管理
+           用户-角色管理
         </p>
     <div style="text-align: center;
     margin: 20px;">
-      
-      <Input  icon="search" placeholder="请输入角色名称搜索" style="width: 600px"></Input>
-     
+     <Input  icon="search" placeholder="请输入角色名称搜索" style="width: 600px"></Input>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
@@ -23,13 +21,13 @@
                  
                  <td><div>
                        
-                         <span>{{item.role_code}}</span>
+                         <span >{{item.role_code}}</span>
                     </div>
                  </td>
                  <td>
                    <div>
                     
-                     <span>{{item.role_name}}</span>
+                     <span >{{item.role_name}}</span>
                     </div>
                    </td>
                  <td>
@@ -37,9 +35,7 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                              <Button @click.stop="linkTO('insertrole',item.role_id)">新增</Button>
-                            <Button @click.stop="linkTO('updaterole',item.role_id)">修改</Button>
-                             <Button @click.stop="destroy(item)">删除</Button>
+                            <Button @click.stop="linkTO('userFromRole',item.role_id)">详情</Button>
                         </div>
                          
                      </div>
@@ -52,7 +48,7 @@
     text-align: center;">
       <Page :total="100"></Page>
     </div>
-    <Modal
+     <Modal
         v-model="modal1"
         title="Common Modal dialog box title"
         @on-ok="ok"
@@ -71,7 +67,6 @@ import axios from 'axios';
                 list:[],
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
                 choose:'',
-                current:'',
                 modal1: false
             }
         },
@@ -104,16 +99,10 @@ import axios from 'axios';
             changeEditable(){
               console.log("修改后的回车事件")
             },
-            linkTO(name,id){
+            gonext(value){
                 this.$router.push({
-                    name:name,
-                    params:{id:id}
+                    name:value
                 })
-            },
-            destroy(item){
-                let vm = this
-                this.modal1 = true
-                this.current = item
             },
             change(index){
                 
@@ -121,13 +110,21 @@ import axios from 'axios';
                 
                 
             },
+            destroy(item){
+                let vm = this
+                this.modal1 = true
+               // this.list.splice(vm.list.indexOf(item),1)
+            },
+            closeTag(){
+                 this.choose="";
+            },
             ok () {
-                 let vm = this;
+                let vm = this;
                 let req = {
                   "jyau_content": {
                     "jyau_reqData": [{
                       "req_no": " AU001201810231521335687",
-                      "role_id": vm.current.role_id
+                      "org_id": vm.current.org_id
                     }],
                     "jyau_pubData": {
                       "operator_id": "1",
@@ -137,14 +134,17 @@ import axios from 'axios';
                     }
                   }
                 } 
-                axios.post('api/role/delRole',req).then(function(res){vm.init()}).catch(function(error){console.log(error)}) 
-               
+                axios.post('api/org/delOrg',req).then(function(res){vm.init()}).catch(function(error){console.log(error)}) 
+         
             },
             cancel () {
                 
             },
-            closeTag(){
-                 this.choose="";
+            linkTO(name,id){
+                this.$router.push({
+                    name:name,
+                    params:{id:id}
+                })
             },
             showTag(item){
                 var box=document.getElementById(item);       
@@ -176,7 +176,7 @@ import axios from 'axios';
             }
         },
         mounted(){
-            this.init()
+             this.init()
         }
 
   }
