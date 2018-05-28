@@ -1,4 +1,4 @@
-# uuthoritym_web
+# authoritym_web
 
 > An Authority System developed by Vue.js
 
