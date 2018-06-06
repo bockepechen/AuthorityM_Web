@@ -38,7 +38,7 @@
                  <td>
                    <div>
                      
-                     <span>{{item.name}}</span>
+                     <span>{{item.name}}{{item.operator_id}}</span>
                     </div>
                    </td>
                  <td>
@@ -46,9 +46,9 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button @click.stop="linkTO('insertuser',item.operator_id)">添加</Button>
-                            <Button @click.stop="linkTO('updateuser',item.operator_id)">修改</Button>
-                              <Button @click.stop="destroy(item)">删除</Button>
+                             <Button type="primary" @click.stop="linkTO('insertuser',item.operator_id)">添加</Button>
+                            <Button type="primary" @click.stop="linkTO('updateuser',item.operator_id)">修改</Button>
+                              <Button type="primary" @click.stop="destroy(item)">删除</Button>
                            
                         </div>
                          
@@ -74,6 +74,7 @@
 </div>
 </template>
 <script>
+import Util from '@/libs/util';
 import axios from 'axios';
   export default{
     data(){
@@ -114,28 +115,17 @@ import axios from 'axios';
                         console.log(error)
                     }) 
             },
-            search (data, argumentObj) {
-                let res = data;
-                let dataClone = data;
-                for (let argu in argumentObj) {
-                    if (argumentObj[argu].length > 0) {
-                        res = dataClone.filter(d => {
-                            return d[argu].indexOf(argumentObj[argu]) > -1;
-                        });
-                        dataClone = res;
-                    }
-                }
-                return res;
-            },
             findAccount(){
+                 let vm = this
                 this.currentpage=10
                 this.list = this.initTable
-                this.list = this.search(this.list, {account: this.account});
+                this.list = Util.search(vm.list, {account: vm.account});
             },
             findName(){
+                let vm = this
                 this.currentpage=10
                 this.list = this.initTable
-                this.list = this.search(this.list, {name: this.name});
+                this.list = Util.search(vm.list, {name: vm.name});
             },
             linkTO(name,id){
                 this.$router.push({

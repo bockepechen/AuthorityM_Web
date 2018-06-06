@@ -5,7 +5,7 @@
             <Icon type="person"></Icon>
            新增绑定
         </p>
-        <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
+        <!-- <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
             <tr>
                 <th colspan="4"><div> 查询条件</div></th>
             </tr>
@@ -27,8 +27,11 @@
                 
             </tr>
            
-        </table>
-        
+        </table> -->
+         <div style="text-align: center;margin: 20px;">
+            <Input  icon="search" placeholder="请输入登陆账号搜索" v-model="account" @on-change="findAccount()" style="width: 300px"></Input>
+            <Input  icon="search" placeholder="请输入姓名搜索" v-model="name" @on-change="findName()" style="width: 300px"></Input>
+        </div>
         
 
         <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
@@ -67,6 +70,7 @@
 </div>
 </template>
 <script>
+import Util from '@/libs/util';
 import axios from 'axios';
     export default{
       data(){
@@ -79,7 +83,9 @@ import axios from 'axios';
               ncheckAllGroup: [],
               checkAllGroup:[],
               userliet:[],
-              currentpage:10
+              currentpage:10,
+              name:"",
+              account:"",
              
           }
       },
@@ -98,6 +104,18 @@ import axios from 'axios';
                 this.currentpage = Number(page+"0")
                 console.log(this.currentpage)
           },
+           findAccount(){
+                 let vm = this
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = Util.search(vm.list, {account_id: vm.account});
+            },
+            findName(){
+                let vm = this
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = Util.search(vm.list, {account_name: vm.name});
+            },
           handleCheckAll(){
                 if (this.indeterminate) {
                     this.checkAll = false;

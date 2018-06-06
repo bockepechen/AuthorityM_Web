@@ -7,7 +7,7 @@
         </p>
     <div style="text-align: center;
     margin: 20px;">
-     <Input  icon="search" placeholder="请输入角色名称搜索" style="width: 600px"></Input>
+     <Input  icon="search" placeholder="请输入角色名称搜索"  v-model="name"  @on-change="findName" style="width: 600px"></Input>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
@@ -17,7 +17,7 @@
                  <th><div>热点操作区域</div></th>
              </tr>
             
-             <tr v-for="(item,index) in list" :key="index">
+             <tr v-for="(item,index) in list" :key="index" v-if="currentpage-10<=index&&index<currentpage">
                  
                  <td><div>
                        
@@ -35,7 +35,7 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                            <Button @click.stop="linkTO('userFromRole',item.role_id)">详情</Button>
+                            <Button type="primary" @click.stop="linkTO('userFromRole',item.role_id)">详情</Button>
                         </div>
                          
                      </div>
@@ -46,7 +46,7 @@
     </div>
     <div style="    margin-top: 30px;
     text-align: center;">
-      <Page :total="100"></Page>
+     <Page :total="list.length" @on-change="pages" ></Page>
     </div>
      <Modal
         v-model="modal1"
@@ -60,14 +60,18 @@
 </div>
 </template>
 <script>
+import Util from '@/libs/util';
 import axios from 'axios';
   export default{
     data(){
             return{
                 list:[],
+                initTable:[],
+                currentpage:10,
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
                 choose:'',
-                modal1: false
+                modal1: false,
+                 name:""
             }
         },
         methods:{
@@ -92,23 +96,21 @@ import axios from 'axios';
                 axios.post("api/role",req).then(function(res){
                     console.log(res.data)
                     vm.list = res.data.jyau_content.jyau_resData[0].role_data
+                    vm.initTable = res.data.jyau_content.jyau_resData[0].role_data
                 }).catch(function(){
 
                 })
             },
-            changeEditable(){
-              console.log("修改后的回车事件")
+             pages(page){
+                
+                this.currentpage = Number(page+"0")
+                console.log(this.currentpage)
             },
-            gonext(value){
-                this.$router.push({
-                    name:value
-                })
-            },
-            change(index){
-                
-                this.$set(this.editable,index,!this.editable[index])
-                
-                
+            findName(){
+                let vm = this
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = Util.search(vm.list, {role_name: vm.name});
             },
             destroy(item){
                 let vm = this

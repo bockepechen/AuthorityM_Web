@@ -1,14 +1,17 @@
 <template>
 
+
   <ul class="ul">
      
         <li :data-name="i.name" v-for="(i, m) in tree.children" :key="m" class="item"  :class="{'tree-hidden':!i.searchopen,'tree-block':i.expanded }">
-          <span  @click="toggle(m)" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend.prevent='dragEnd' :data-name="i.name" :data-id="i.id">{{i.name}}</span>
-         <Icon type="arrow-right-b" v-if="(!i.open)&&i.children"></Icon>
-         <Icon type="arrow-down-b" v-if="i.open&&i.children"></Icon>
-         <span v-if="!i.children" @click="removeItem(i)" ><Icon type="ios-minus" style="color:red"></Icon></span>
-        <!--  <span v-if="!isdelete(i.name)">+</span> -->
-          <a></a>
+          <div  @click="toggle(m)" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend.prevent='dragEnd' :data-name="i.name" :data-id="i.id">{{i.name}}
+
+            <Icon type="arrow-right-b" v-if="(!i.open)&&i.children"></Icon>
+            <Icon type="arrow-down-b" v-if="i.open&&i.children"></Icon>
+            <span v-if="!i.children" @click.stop="removeItem(i)" ><Icon type="ios-minus" style="color:red"></Icon></span>
+          </div>
+         
+     
           
          <span v-if="i.open">
           <!--  <treeNode :tree="i" :searchname="childrentitle"></treeNode>  -->
@@ -27,6 +30,7 @@
  
 </template>
 <script>
+import axios from 'axios';
 let fromData = {}
 let toData={}
  export default{
@@ -102,11 +106,11 @@ let toData={}
            
             let vm = this
             vm.tree.children[m].open = !vm.tree.children[m].open
-             console.log("展开",m,vm.tree.children[m].open)
+             //console.log("展开",m,vm.tree.children[m].open)
            
           },
           search(name){
-            console.log("search")
+            //console.log("search")
             let vm = this;
             for(let i=0;i<vm.tree.children.length;i++){
                 if(vm.tree.children[i].name.indexOf(name)>-1){
@@ -128,7 +132,10 @@ let toData={}
            
           },
           dragEnter(e){
-           
+            console.log("进来了",e)
+           // e.target.style.backgroundColor="#2d8cf0";
+           e.target.style.backgroundColor="#e3dfdf";
+            //e.target.style.color="#fff"
             toData.child_name = e.target.dataset.name
             toData.child_id = e.target.dataset.id
             toData.parent_name = this.tree.name
@@ -144,7 +151,9 @@ let toData={}
              
           },
           dragLeave(e){
-            
+            e.target.style.backgroundColor="rgba(0,0,0,0)";
+           // e.target.style.color="black"
+            console.log("出去了",e.target)
           },
           drop(e){
 
@@ -166,7 +175,7 @@ let toData={}
 
           },
           removeItem(item){
-            console.log("removeItem",item)
+           // console.log("removeItem",item)
             let vm = this 
              let root = vm.tree
               for(let i=0;i<root.children.length;i++){
@@ -179,8 +188,66 @@ let toData={}
                   
                 
               }
-             //用户机构删除的操作
-             console.log("删除后的tree",this.$store.state.app.tree)
+              //用户机构删除的操作
+              let itemdata = []
+              itemdata.push(item.id)
+              vm.removeData(root.id,itemdata)
+             
+             //console.log("删除后的tree",item.id,root.id)
+          },
+          removeData(org_id,oper_ids){
+              let vm = this
+              let org =org_id
+              let oper =oper_ids
+             
+              let req = {
+                "jyau_content": {
+                  "jyau_reqData": [{
+                    "req_no": "AU002201810231521335687",
+                    "org_id": org,
+                    "oper_ids": oper
+                  }],
+                  "jyau_pubData": {
+                    "operator_id": "1",
+                    "ip_address": "10.2.0.116",
+                    "account_id": "systemman",
+                    "system_id": "10909"
+                  }
+                }
+              }
+              axios.post("api/emporg/delOperator",req).then(function(res){
+                console.log(res.data)
+              }).catch(function(error){
+                console.log(error)
+              })
+          },
+          addData(org_id,oper_ids){
+               let vm = this
+               let org =org_id
+               let oper =oper_ids
+               let req =   {
+                            "jyau_content": {
+                                "jyau_reqData": [{
+                                    "req_no": "AU002201810231521335687",
+                                    "org_id": org,
+                                    "oper_ids": oper
+                                }],
+                                "jyau_pubData": {
+                                    "operator_id": "1",
+                                    "ip_address": "10.2.0.116",
+                                    "account_id": "systemman",
+                                    "system_id": "10909"
+                                }
+                            }
+                        }
+                
+                axios.post("api/emporg/addOperator",req).then(function(res){
+                    console.log(res.data)
+                    
+                }).catch(function(error){
+                   
+                    console.log(error)
+                })
           },
           checktable(from,to){
               
@@ -211,18 +278,81 @@ let toData={}
             
           },
           check(from,to){
-               console.log("from",from,"to",to)
+              // console.log("from",from,"to",to)
               let vm = this;
               
               let root = this.$store.state.app.tree
               
               let dataset;
-              /* if((from.parent_name.indexOf("机构")>-1)||(to.indexOf("机构")>-1)){
+              /*  if((from.parent_name.indexOf("机构")>-1)||(to.indexOf("机构")>-1)){
                 return
+              }  */
+              if(from.parent_name==to.parent_name){
+                return
+              }
+              /* 拖拽到机构判断是否重复 */
+              if(to.parent_name=="myTree"){
+               
+                for(let i=0;i<root.children.length;i++){
+                   if(to.child_id==root.children[i].id){
+                    
+                      for(let j=0; j<root.children[i].children.length; j++){
+                        
+                        if(from.child_id==root.children[i].children[j].id){
+                          console.log("机构去重复")
+                          return
+                        }
+                      }
+                   }
+                 
+                  
+                }
+              }
+              /* 拖拽到机构 */
+              if(to.parent_name=="myTree"){
+                 for(let i=0;i<root.children.length;i++){
+                  if(from.parent_id==root.children[i].id){
+                    for(let j=0;j<root.children[i].children.length;j++){
+                        if(from.child_id==root.children[i].children[j].id){
+                            dataset = root.children[i].children[j]
+                            root.children[i].children.splice(j,1)
+                            //用户机构删除的操作
+                            let itemdata =[]
+                            itemdata.push(from.child_id)
+                            vm.removeData(from.parent_id,itemdata)
+                            }
+                        
+                      }
+
+                  }
+                
+                }
+
+                for(let i=0;i<root.children.length;i++){
+                 if(to.child_id==root.children[i].id){
+                   console.log("end",to,root.children[i])
+                        root.children[i].children.push(dataset)
+                        //用户机构增加的操作
+                        let itemdata =[]
+                        itemdata.push(from.child_id)
+                         vm.addData(to.parent_id,itemdata)
+                  }
+                  
               } 
-              if(from==to){
                 return
-              } */
+              }
+              /* 拖拽到人员判断是否重复 */
+              for(let i=0;i<root.children.length;i++){
+                if(to.parent_id==root.children[i].id){
+                   for(let j=0;j<root.children[i].children.length;j++){
+                     if(from.child_id==root.children[i].children[j].id){
+                       console.log("有重复的")
+                       return
+                     }
+                   }
+                }
+              }
+              /* 拖拽到人员 */
               for(let i=0;i<root.children.length;i++){
                 if(from.parent_id==root.children[i].id){
                    for(let j=0;j<root.children[i].children.length;j++){
@@ -230,7 +360,9 @@ let toData={}
                           dataset = root.children[i].children[j]
                           root.children[i].children.splice(j,1)
                           //用户机构删除的操作
-                        
+                          let itemdata =[]
+                          itemdata.push(from.child_id)
+                          vm.removeData(from.parent_id,itemdata)
                           }
                       
                     }
@@ -243,8 +375,12 @@ let toData={}
                    for(let j=0;j<root.children[i].children.length;j++){
                    
                     if(to.child_id==root.children[i].children[j].id){
-                        //用户机构增加的操作
+                        
                         root.children[i].children.push(dataset)
+                        //用户机构增加的操作
+                        let itemdata =[]
+                        itemdata.push(from.child_id)
+                         vm.addData(to.parent_id,itemdata)
                     }
                   }
 
@@ -253,7 +389,7 @@ let toData={}
               } 
              
               this.$store.commit("settree",root)
-              console.log("after",root,dataset)
+              //console.log("after",root,dataset)
               
            
 
@@ -271,7 +407,13 @@ let toData={}
 }
 li{
   list-style: none;
+      margin: 5px;
 }
-
+/* li:hover{
+    background-color:#e3dfdf;
+} */
+.ul{
+  
+}
 </style>
 

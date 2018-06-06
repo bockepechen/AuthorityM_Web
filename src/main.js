@@ -9,9 +9,7 @@ import store from './store'
 import 'iview/dist/styles/iview.css';
 import iviewArea from 'iview-area';
 
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(ElementUI);
+
 Vue.config.productionTip = false
 Vue.use(iView);
 Vue.use(iviewArea);

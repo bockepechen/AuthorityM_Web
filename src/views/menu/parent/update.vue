@@ -6,11 +6,14 @@
               <FormItem label="父菜单显示名称">
                  
                    <Select v-model="form.parent_id" style="width:200px">
-                    <Option v-for="item in parent" :value="item.mu_id" :key="item.mu_id">{{ item.mu_name}}</Option>
+                     <Option v-for="item in parent" :value="item.menu_id" :key="item.menu_id">{{ item.name}}</Option>
                  </Select>
               </FormItem>
               <FormItem label="菜单名称">
                   <Input v-model="form.name"></Input>
+              </FormItem>
+                <FormItem label="功能调入接口">
+                  <Input v-model="form.menu_action"></Input>
               </FormItem>
                <FormItem label="菜单代码">
                   <Input v-model="form.code"></Input>
@@ -44,6 +47,7 @@ import axios from 'axios';
                   parent_id:"",
                   display_order:"",
                   if_leaf:"",
+                  menu_action:"",
                   name:"",
                   code:"",
                    
@@ -65,6 +69,7 @@ import axios from 'axios';
                         "menu_name": vm.form.name,
                         "menu_code": vm.form.code,
                         "if_leaf": vm.form.if_leaf,
+                         "menu_action":vm.form.menu_action,
                         "display_order": vm.form.display_order,
                         "type": "02"
                     }],
@@ -114,26 +119,27 @@ import axios from 'axios';
                   vm.form.name=res.data.jyau_content.jyau_resData[0].menu_name
                   vm.form.code=res.data.jyau_content.jyau_resData[0].menu_code
                   vm.form.if_leaf=res.data.jyau_content.jyau_resData[0].if_leaf
+                  vm.form.menu_action=res.data.jyau_content.jyau_resData[0].menu_action
               }).catch(function(error){
 
               })
-              let req1 = {
-                    "jyau_content": {
-                        "jyau_reqData": [{
-                            "req_no": " AU001201810231521335687"
+              let req1 =  {
+                "jyau_content": {
+                    "jyau_reqData": [{
+                        "req_no": "AU002201810231521335687"
                         }],
-                        "jyau_pubData": {
-                            "operator_id": "1",
-                            "account_id": "systemman",
-                            "ip_address": "10.2.0.116",
-                            "system_id": "10909"
-                        }
+                    "jyau_pubData": {
+                        "operator_id": "1",
+                        "ip_address": "10.2.0.116",
+                        "account_id": "systemman",
+                        "system_id": "10909"
                     }
                 }
+                }
 
-                axios.post("api/menu",req1).then(function(res){
+                axios.post("api/menuAuth/findParentMenu",req1).then(function(res){
                     console.log(res.data)
-                     vm.parent = res.data.jyau_content.jyau_resData[0].menu_list
+                     vm.parent = res.data.jyau_content.jyau_resData[0].multi_menuList
                 }).catch(function(error){
 
                 })

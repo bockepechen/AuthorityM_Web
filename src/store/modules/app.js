@@ -10,6 +10,7 @@ const app = {
         }],
         tree:{},
         righttable:'',
+        menuList:[],
         leftli:'',
         routers: [
           otherRouter,
@@ -25,6 +26,10 @@ const app = {
       ],
   },
   mutations:{
+    //左菜单部分
+    setMenuList(state, array){
+      state.menuList = array
+    },
     //导航栏部分
     setCurrentPath (state, pathArr) {
         state.currentPath = pathArr;

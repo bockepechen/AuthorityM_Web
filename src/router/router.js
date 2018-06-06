@@ -45,7 +45,7 @@ export const appRouter = [
     title: '组件',
     component: Mains,
     children:[
-      {path:'home',title:'home',name:'home_index',component:()=>import('@/views/home/home.vue')},
+     /*  {path:'home',title:'home',name:'home_index',component:()=>import('@/views/home/home.vue')}, */
       {path:'image-editor',title:'image-editor',name:'image-editor',component:()=>import('@/views/my-components/image-editor/image-editor.vue')},
       {path:'text-editor',title:'text-editor',name:'text-editor',component:()=>import('@/views/my-components/text-editor/text-editor.vue')},
 
@@ -111,13 +111,13 @@ export const appRouter = [
             title: '修改',
             component: () => import('@/views/company/update.vue')
         },
-        {
+      /*   {
             path: 'detail',
             icon: 'compose',
             name: 'detail',
             title: '详情',
             component: () => import('@/views/company/detail.vue')
-        },
+        }, */
         {
             path: 'list',
             icon: 'compose',
@@ -186,6 +186,7 @@ export const appRouter = [
         { path: 'detailmenu', meta:{title:'菜单管理'},title: '新增', name: 'detail', icon: 'compose', component: () => import('@/views/menu/parent/detail.vue') },
         { path: 'updatemenu/:id', meta:{title:'修改管理'},title: '新增', name: 'updatemenu', icon: 'compose', component: () => import('@/views/menu/parent/update.vue') },
         { path: 'listmenu', meta:{title:'菜单管理'},title: '新增', name: 'listmenu', icon: 'compose', component: () => import('@/views/menu/list.vue') },
+        { path: 'pushMessage', meta:{title:'消息管理'},title: '新增', name: 'pushMessage', icon: 'compose', component: () => import('@/views/menu/pushMessage.vue') },
         { path: 'insertchild', title: '新增', name: 'insertchild', icon: 'compose', component: () => import('@/views/menu/child/insert.vue') },
         { path: 'detailchild', title: '新增', name: 'detailchild', icon: 'compose', component: () => import('@/views/menu/child/detail.vue') },
         { path: 'updatechild', title: '新增', name: 'updatechild', icon: 'compose', component: () => import('@/views/menu/child/update.vue') },
@@ -210,6 +211,7 @@ export const appRouter = [
         { path: 'usertoRole', meta:{title:'用户-角色管理'}, name: 'usertoRole', icon: 'compose', component: () => import('@/views/authority/role/usertoRole.vue') }, 
         { path: 'userFromRole/:id',meta:{title:'角色用户列表'}, title: '新增', name: 'userFromRole', icon: 'compose', component: () => import('@/views/authority/role/userFromRole.vue') },
         { path: 'userBindRole/:id',meta:{title:'角色用户列表'}, title: '新增', name: 'userBindRole', icon: 'compose', component: () => import('@/views/authority/role/userBindRole.vue') },
+        { path: 'roleConfigMenu/:id',meta:{title:'角色配置菜单'}, title: '新增', name: 'roleConfigMenu', icon: 'compose', component: () => import('@/views/authority/role/roleConfigMenu.vue') },
         { path: 'insertjob', title: '新增', name: 'insertjob', icon: 'compose', component: () => import('@/views/authority/job/insert.vue') },
         { path: 'detailjob', title: '新增', name: 'detailjob', icon: 'compose', component: () => import('@/views/authority/job/detail.vue') },
         { path: 'updatejob', title: '新增', name: 'updatejob', icon: 'compose', component: () => import('@/views/authority/job/update.vue') },

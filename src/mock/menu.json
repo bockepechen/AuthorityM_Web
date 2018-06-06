@@ -18,15 +18,11 @@
                 "route":"listrole"
               },
               {
-                "name":"岗位管理",
-                "route":"listjob"
-              },
-              {
                 "name":"机构-用户管理",
                 "route":"organizationtoUser"
               },
               {
-                "name":"用户-角色管理",
+                "name":"角色-用户管理",
                 "route":"usertoRole"
               }
           ]

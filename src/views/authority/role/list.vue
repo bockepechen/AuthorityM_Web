@@ -8,7 +8,7 @@
     <div style="text-align: center;
     margin: 20px;">
       
-      <Input  icon="search" placeholder="请输入角色名称搜索" style="width: 600px"></Input>
+      <Input  icon="search" placeholder="请输入角色名称搜索" v-model="name" @on-change="findName()" style="width: 600px"></Input>
      
     </div>
     <div>
@@ -19,7 +19,7 @@
                  <th><div>热点操作区域</div></th>
              </tr>
             
-             <tr v-for="(item,index) in list" :key="index">
+             <tr v-for="(item,index) in list" :key="index" v-if="currentpage-10<=index&&index<currentpage">
                  
                  <td><div>
                        
@@ -37,9 +37,10 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                              <Button @click.stop="linkTO('insertrole',item.role_id)">新增</Button>
-                            <Button @click.stop="linkTO('updaterole',item.role_id)">修改</Button>
-                             <Button @click.stop="destroy(item)">删除</Button>
+                              <Button type="primary" @click.stop="linkTO('insertrole',item.role_id)">新增</Button>
+                            <Button type="primary" @click.stop="linkTO('updaterole',item.role_id)">修改</Button>
+                             <Button type="primary" @click.stop="destroy(item)">删除</Button>
+                             <Button type="primary" style="margin-top:5px" @click.stop="linkTO('roleConfigMenu',item.role_id)">角色配置菜单</Button>
                         </div>
                          
                      </div>
@@ -50,7 +51,7 @@
     </div>
     <div style="    margin-top: 30px;
     text-align: center;">
-      <Page :total="100"></Page>
+      <Page :total="list.length" @on-change="pages" ></Page>
     </div>
     <Modal
         v-model="modal1"
@@ -64,15 +65,19 @@
 </div>
 </template>
 <script>
+import Util from '@/libs/util';
 import axios from 'axios';
   export default{
     data(){
             return{
                 list:[],
+                initTable:[],
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
                 choose:'',
                 current:'',
-                modal1: false
+                currentpage:10,
+                modal1: false,
+                name:""
             }
         },
         methods:{
@@ -97,9 +102,22 @@ import axios from 'axios';
                 axios.post("api/role",req).then(function(res){
                     console.log(res.data)
                     vm.list = res.data.jyau_content.jyau_resData[0].role_data
+                    vm.initTable = res.data.jyau_content.jyau_resData[0].role_data
+
                 }).catch(function(){
 
                 })
+            },
+            pages(page){
+                
+                this.currentpage = Number(page+"0")
+                console.log(this.currentpage)
+            },
+            findName(){
+                let vm = this
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = Util.search(vm.list, {role_name: vm.name});
             },
             changeEditable(){
               console.log("修改后的回车事件")
@@ -189,7 +207,7 @@ z-Index:10
 z-Index:-999
 }
 .content{
-    width:270px;height:70px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 20px;position: absolute; 
+    width:270px;height:100px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 20px;position: absolute; 
 }
 .circle{
   bottom: 3px;

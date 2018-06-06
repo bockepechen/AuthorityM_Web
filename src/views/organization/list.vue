@@ -17,8 +17,8 @@
           <span>图标</span>
         </div>
       </div> -->
-      <Input  icon="search" placeholder="输入机构代码搜索" style="width: 300px"></Input>
-      <Input  icon="search" placeholder="收入机构名称搜索" style="width: 300px"></Input>
+      <Input  icon="search" placeholder="输入机构代码搜索" v-model="code" @on-change="findCode()" style="width: 300px"></Input>
+      <Input  icon="search" placeholder="收入机构名称搜索" v-model="name" @on-change="findName()" style="width: 300px"></Input>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
@@ -47,10 +47,10 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button @click.stop="linkTO('insertorganization',item.org_id)">添加</Button>
-                             <Button @click.stop="linkTO('updateorganization',item.org_id)">修改</Button>
-                             <Button @click.stop="destroy(item)">删除</Button>
-                             <Button style="margin-top:5px" @click.stop="linkTO('otoUser',item.org_id)">添加机构人</Button>
+                             <Button type="primary" @click.stop="linkTO('insertorganization',item.org_id)">添加</Button>
+                             <Button type="primary" @click.stop="linkTO('updateorganization',item.org_id)">修改</Button>
+                             <Button type="primary" @click.stop="destroy(item)">删除</Button>
+                             <Button type="primary" style="margin-top:5px" @click.stop="linkTO('otoUser',item.org_id)">添加机构人</Button>
                         </div>
                          
                      </div>
@@ -75,16 +75,20 @@
 </div>
 </template>
 <script>
+import Util from '@/libs/util';
 import axios from 'axios';
   export default{
     data(){
             return{
                 list:[],
+                initTable:[],
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
                 choose:'',
                 current:'',
                 modal1: false,
-                currentpage:10
+                currentpage:10,
+                code:"",
+                name:""
             }
         },
         methods:{
@@ -106,6 +110,7 @@ import axios from 'axios';
                 axios.post('api/org',req).then(function(res){ 
                      console.log(res.data)
                      vm.list = res.data.jyau_content.jyau_resData[0].org_data
+                      vm.initTable = res.data.jyau_content.jyau_resData[0].org_data
                     }).catch(function(error){
                         console.log(error)
                         }) 
@@ -124,6 +129,19 @@ import axios from 'axios';
                 this.modal1 = true
                  this.current = item
               
+            },
+             findCode(){
+                console.log("findCode")
+                let vm = this
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = Util.search(vm.list, {org_code: vm.code});
+            },
+            findName(){
+                let vm = this
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = Util.search(vm.list, {org_name: vm.name});
             },
             change(index){
                 

@@ -9,7 +9,7 @@
     margin: 20px;">
      
       
-      <Input  icon="search" placeholder="请输入菜单名称搜索" style="width: 600px"></Input>
+      <Input  icon="search" placeholder="请输入菜单名称搜索"  v-model="name"  @on-change="findName" style="width: 600px"></Input>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
@@ -19,7 +19,7 @@
                  <th><div>热点操作区域</div></th>
              </tr>
             
-             <tr v-for="(item,index) in list" :key="index">
+             <tr v-for="(item,index) in list" :key="index" v-if="currentpage-10<=index&&index<currentpage">
                  
                  <td><div>
                        
@@ -37,9 +37,9 @@
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                              <Button @click.stop="linkTO('insertmenu',item.mu_id)">新增</Button>
-                              <Button @click.stop="linkTO('updatemenu',item.mu_id)">修改</Button>
-                             <Button @click.stop="destroy(item)">删除</Button>
+                              <Button type="primary" @click.stop="linkTO('insertmenu',item.mu_id)">新增</Button>
+                              <Button type="primary" @click.stop="linkTO('updatemenu',item.mu_id)">修改</Button>
+                             <Button type="primary" @click.stop="destroy(item)">删除</Button>
                             
                             
                             
@@ -53,7 +53,7 @@
     </div>
     <div style="    margin-top: 30px;
     text-align: center;">
-      <Page :total="100"></Page>
+      <Page :total="list.length" @on-change="pages" ></Page>
     </div>
       <Modal
         v-model="modal1"
@@ -68,14 +68,18 @@
 </template>
 <script>
 import axios from 'axios';
+import Util from '@/libs/util';
   export default{
     data(){
             return{
                 list:[],
+                 initTable:[],
                 editable:[false,false,false,false,false,false,false,false,false,false,false],
                 choose:'',
                  current:'',
-                modal1: false
+                 currentpage:10,
+                modal1: false,
+                name:""
             }
         },
         methods:{
@@ -98,19 +102,27 @@ import axios from 'axios';
                 axios.post("api/menu",req).then(function(res){
                     console.log(res.data)
                      vm.list = res.data.jyau_content.jyau_resData[0].menu_list
+                     vm.initTable = res.data.jyau_content.jyau_resData[0].menu_list
                 }).catch(function(error){
 
                 })
 
             },
+             pages(page){
+                
+                this.currentpage = Number(page+"0")
+                console.log(this.currentpage)
+            },
             changeEditable(){
               console.log("修改后的回车事件")
             },
-            gonext(value){
-                this.$router.push({
-                    name:value
-                })
+            findName(){
+                let vm = this
+                this.currentpage=10
+                this.list = this.initTable
+                this.list = Util.search(vm.list, {mu_name: vm.name});
             },
+           
             change(index){
                 
                 this.$set(this.editable,index,!this.editable[index])
