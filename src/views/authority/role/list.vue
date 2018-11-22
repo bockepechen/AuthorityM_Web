@@ -5,17 +5,16 @@
             <Icon type="person"></Icon>
            角色管理
         </p>
-    <div style="text-align: center;
-    margin: 20px;">
+    <div class="home-head">
       
       <Input  icon="search" placeholder="请输入角色名称搜索" v-model="name" @on-change="findName()" style="width: 600px"></Input>
-     
+         <Button type="primary" @click.stop="linkTO('insertrole')">新增</Button>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
              <tr>
-                  <th><div>角色编号<Icon type="arrow-down-a"></Icon></div></th>
-                 <th><div>角色名称<Icon type="arrow-down-a"></Icon></div></th>
+                  <th><div>角色编号</div></th>
+                 <th><div>角色名称</div></th>
                  <th><div>热点操作区域</div></th>
              </tr>
             
@@ -33,14 +32,14 @@
                     </div>
                    </td>
                  <td>
-                     <div @click.stop="showTag(item)">点我呀</div>
+                     <div @click.stop="showTag(item)"><Icon type="settings" size="22"></Icon></div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                              <Button type="primary" @click.stop="linkTO('insertrole',item.role_id)">新增</Button>
+                             
                             <Button type="primary" @click.stop="linkTO('updaterole',item.role_id)">修改</Button>
                              <Button type="primary" @click.stop="destroy(item)">删除</Button>
-                             <Button type="primary" style="margin-top:5px" @click.stop="linkTO('roleConfigMenu',item.role_id)">角色配置菜单</Button>
+                             <Button type="primary" @click.stop="linkTO('roleConfigMenu',item.role_id)">角色配置菜单</Button>
                         </div>
                          
                      </div>
@@ -207,7 +206,7 @@ z-Index:10
 z-Index:-999
 }
 .content{
-    width:270px;height:100px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 20px;position: absolute; 
+    width:270px;height:70px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 4px;position: absolute; 
 }
 .circle{
   bottom: 3px;
@@ -220,6 +219,9 @@ z-Index:-999
     border-color: transparent;
     border-style: solid;
         border-width: 6px;
+}
+.home-head{
+    text-align: center; margin: 20px;
 }
 </style>
 

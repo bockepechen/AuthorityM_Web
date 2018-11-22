@@ -12,8 +12,8 @@
             <div class="unlock-input-con">
                 <div class="unlock-input-overflow-con">
                     <div class="unlock-overflow-body" :style="{right: inputLeft}">
-                        <input ref="inputEle" v-model="password" class="unlock-input" type="password" placeholder="密码同登录密码" />
-                        <button ref="unlockBtn" @mousedown="unlockMousedown" @mouseup="unlockMouseup" @click="handleUnlock" class="unlock-btn"><Icon color="white" type="key"></Icon></button>
+                        <input ref="inputEle" v-model="password" class="unlock-input" type="password"  @keyup.enter="validator" placeholder="密码同登录密码" />
+                        <button ref="unlockBtn" @mousedown="unlockMousedown" @mouseup="unlockMouseup" @click="validator" class="unlock-btn"><Icon color="white" type="key"></Icon></button>
                     </div>
                 </div>
             </div>
@@ -24,6 +24,8 @@
 
 <script>
 //import Cookies from 'js-cookie';
+//import axios from 'axios';
+import Util from '@/libs/util';
 export default {
     name: 'Unlock',
     data () {
@@ -47,7 +49,44 @@ export default {
     },
     methods: {
         validator () {
-            return true; // 你可以在这里写密码验证方式，如发起ajax请求将用户输入的密码this.password与数据库用户密码对比
+            let vm = this
+            let req = {
+                "jyau_content": {
+                    "jyau_reqData": [{
+                        "req_no": " AU001201810231521335687",
+                        "account_pwd": vm.password
+                    }],
+                    "jyau_pubData": {
+                        "operator_id": "",
+                        "account_id": Util.getStorge("UserName"),
+                        "ip_address": "10.2.0.116",
+                        "system_id": "10909"
+                    }
+                }
+            }
+              Util.axios.post('api/login',req).then(function(res){
+                    console.log(res)
+                    if(res.data.jyau_content.jyau_resHead.return_code=="0000"){
+                        vm.avatorLeft = '0px';
+                        vm.inputLeft = '400px';
+                        vm.password = '';
+                        //Cookies.set('locking', '0');
+                        Util.removeStorge("locking");
+                        vm.$emit('on-unlock');
+                       
+                    
+                    }else{
+                        vm.$Message.error('密码错误,请重新输入。');
+                    
+                    }
+                
+                
+                })
+                .catch(function(error){
+                    console.log(error)
+                }) 
+            console.log(this.password)
+            //return true; // 你可以在这里写密码验证方式，如发起ajax请求将用户输入的密码this.password与数据库用户密码对比
         },
         handleClickAvator () {
             this.avatorLeft = '-180px';
@@ -55,15 +94,7 @@ export default {
             this.$refs.inputEle.focus();
         },
         handleUnlock () {
-            if (this.validator()) {
-                this.avatorLeft = '0px';
-                this.inputLeft = '400px';
-                this.password = '';
-                //Cookies.set('locking', '0');
-                this.$emit('on-unlock');
-            } else {
-                this.$Message.error('密码错误,请重新输入。如果忘了密码，清除浏览器缓存重新登录即可，这里没有做后端验证');
-            }
+          // this.validator()
         },
         unlockMousedown () {
             this.$refs.unlockBtn.className = 'unlock-btn click-unlock-btn';
@@ -71,6 +102,9 @@ export default {
         unlockMouseup () {
             this.$refs.unlockBtn.className = 'unlock-btn';
         }
+    },
+    mounted(){
+        Util.setStorge("locking","locking");
     }
 };
 </script>

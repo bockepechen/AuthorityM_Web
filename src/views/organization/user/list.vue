@@ -5,26 +5,16 @@
             <Icon type="person"></Icon>
             用户管理
         </p>
-    <div style="text-align: center;
-    margin: 20px;">
-      <!-- <div style="display:flex;width:600px;">
-        <div style="flex:1">
-          <input type="text">
-          <span>图标</span>
-        </div>
-        <div style="flex:1">
-          <input type="text">
-          <span>图标</span>
-        </div>
-      </div> -->
+    <div class="home-head">
       <Input  icon="search" placeholder="请输入登陆账号搜索" v-model="account" @on-change="findAccount" style="width: 300px"></Input>
       <Input  icon="search" placeholder="请输入姓名搜索" v-model="name"  @on-change="findName" style="width: 300px"></Input>
+       <Button type="primary" @click.stop="linkTO('insertuser')">添加</Button>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
              <tr>
-                  <th><div>登陆账号<Icon type="arrow-down-a"></Icon></div></th>
-                 <th><div>用户姓名<Icon type="arrow-down-a"></Icon></div></th>
+                  <th><div>登陆账号</div></th>
+                 <th><div>用户姓名</div></th>
                  <th><div>热点操作区域</div></th>
              </tr>
             
@@ -38,15 +28,15 @@
                  <td>
                    <div>
                      
-                     <span>{{item.name}}{{item.operator_id}}</span>
+                     <span>{{item.name}}</span>
                     </div>
                    </td>
                  <td>
-                     <div @click.stop="showTag(item)"><!-- {{item.operator_id}} --> 点我呀</div>
+                     <div @click.stop="showTag(item)"><Icon type="settings" size="22"></Icon></div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button type="primary" @click.stop="linkTO('insertuser',item.operator_id)">添加</Button>
+                            
                             <Button type="primary" @click.stop="linkTO('updateuser',item.operator_id)">修改</Button>
                               <Button type="primary" @click.stop="destroy(item)">删除</Button>
                            
@@ -211,7 +201,7 @@ z-Index:10
 z-Index:-999
 }
 .content{
-    width:270px;height:70px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 20px;position: absolute; 
+    width:270px;height:70px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 4px;position: absolute; 
 }
 .circle{
   bottom: 3px;
@@ -223,7 +213,10 @@ z-Index:-999
     position: absolute;
     border-color: transparent;
     border-style: solid;
-        border-width: 6px;
+    border-width: 6px;
+}
+.home-head{
+    text-align: center; margin: 20px;
 }
 </style>
 

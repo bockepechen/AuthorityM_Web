@@ -30,7 +30,7 @@ export default {
         }
     },
     mounted () {
-       
+         //localStorage.setItem("locking","locking");
         this.showUnlock = true;
         if (!document.getElementById('lock_screen_back')) {
             let lockdiv = document.createElement('div');

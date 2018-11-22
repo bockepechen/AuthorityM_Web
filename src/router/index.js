@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import {routers, appRouter} from './router';
 import iView from 'iview'
+import Util from '@/libs/util';
 Vue.use(Router)
 
 const RouterConfig = {
@@ -14,19 +15,32 @@ export const router = new Router(RouterConfig);
 
 router.beforeEach((to,from,next) => {
   iView.LoadingBar.start();
-  if(to.name=='login'){
-    next(true);
-  }else{
-    if(!(localStorage.getItem("UserName")=="")){
-      next(true);
+  //console.log("这是啥",!!Util.getStorge("locking"))
+    if(Util.getStorge("locking") && to.name !== 'locking'){
+      next({
+          replace: true,
+          name: 'locking'
+      });
+      return
+     
     }else{
       
-      next({
-        name: 'login'
-      }) 
     }
-
-  }
+    if(to.name=='login'){
+      next(true);
+    }else{
+      if((Util.getStorge("UserName"))){
+        next(true);
+      }else{
+        
+        next({
+          name: 'login'
+        }) 
+      }
+  
+    }
+ 
+  
   
   
 

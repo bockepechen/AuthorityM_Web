@@ -1,6 +1,23 @@
 <template>
-    <div class="login" >
-        <div class="login-con">
+    <div class="login vue-canvas-nest-element" >
+           <transition name="fade">
+            <div class="org" v-if="showOrg">
+                <Card :bordered="false">
+                        <p slot="title">
+                            <Icon type="log-in"></Icon>
+                            请选择机构
+                        </p>
+                    <div v-for="(item,index) in list" :key="index" class="organization-choose">
+                            <div @click="chooseO(item.org_name,item.org_id)" class="organization-choose-item">
+                                <div class="organization-choose-item-content"> <Icon type="log-in" class="mr10"></Icon>{{item.org_name}}</div>
+                            </div>
+                            
+                        </div>
+                </Card>   
+            </div>
+           </transition>
+        <transition name="fade">   
+        <div class="login-con" v-if="showLogin" id="login-con">
             <Card :bordered="false">
                 <p slot="title">
                     <Icon type="log-in"></Icon>
@@ -55,17 +72,32 @@
                 </div>
             </Card>
         </div>
+        </transition>
+        
+       
     </div>
 </template>
 <script>
-import axios from 'axios';
+import CanvasNest from 'canvas-nest.js';
+
+import Util from '@/libs/util';
+//import axios from 'axios';
   export default{
     name:'login',
     data(){
       return{
+          list:[],
+          cn: '',
+        config: {
+            color: '0,0,0',
+            count: 99,
+             zIndex: 2,
+        },
+          showOrg:false,
+          showLogin:true,
           type:"password",
           isdrag:false,
-         formInline: {
+          formInline: {
                     name: 'zhangming',
                     pwd: '111111',
                     state:true
@@ -86,7 +118,77 @@ import axios from 'axios';
 
       }
     },
-    methods:{
+   methods:{
+        initList(){
+            let vm = this
+            vm.list = JSON.parse(Util.getStorge("User")).jyau_content.jyau_resData[0].org_list
+        },
+         chooseO(name,id){
+            let obj ={}
+            obj.name = name
+            obj.id = id
+            Util.setStorge("organization",JSON.stringify(obj))
+           
+           // this.organization = true
+            let vm = this
+            let req = {
+                  "jyau_content": {
+                    " jyau_reqData": [{
+                        "req_no": "AU2018048201802051125231351",
+                        "org_id": id
+                    }],
+                    "jyau_pubData": {
+                        "operator_id": JSON.parse(Util.getStorge("User")).jyau_content.jyau_resData[0].operator_id,
+                        "account_id": "systemman",
+                        "ip_address": "10.2.0.116",
+                        "system_id": "10909"
+                    }
+                }
+            }
+            console.log("req",JSON.stringify(req))
+            Util.axios.post(Util.ajaxUrl+"/api/menuAuth/queryOperatorMenu",req).then(function(res){
+                console.log(res.data.jyau_content.jyau_resData[0].multi_menuList)
+                 let list =res.data.jyau_content.jyau_resData[0].multi_menuList
+                    let menuList = {}
+                    menuList.name="菜单"
+                    menuList.data=[]
+                    if(list){
+                        
+                    }else{
+                       
+                    } 
+                        for(let i=0; i<list.length;i++){
+                        let obj={}
+                        obj.name=list[i].name
+                        obj.id = list[i].menu_id
+                        obj.children = []
+                        if(list[i].child_list){
+                           
+                            for(let j=0; j<list[i].child_list.length; j++){
+                                let child={}
+                                child.name=list[i].child_list[j].name
+                                child.id=list[i].child_list[j].menu_id
+                                child.route= list[i].child_list[j].action
+                                obj.children.push(child)
+                            }
+                        }else{
+                            
+                        } 
+                       
+                        menuList.data.push(obj)
+                     }
+                   
+                    
+                    
+                    vm.$store.commit("setMenuList",menuList.data)
+                    console.log(menuList)
+                      vm.$router.push({
+                        name: 'home_index'
+                    });
+            }).catch(function(error){
+                console.log(error)
+            })
+        },
         changetype(item){
             let vm =this
             if(item=="password"){
@@ -122,22 +224,21 @@ import axios from 'axios';
         }
 
 
-         axios.post('api/login',req)
+         Util.axios.post(Util.ajaxUrl+'/api/login',req)
         .then(function(res){
             console.log(res)
             if(res.data.jyau_content.jyau_resHead.return_code=="0000"){
-                
-                localStorage.setItem("UserName",vm.formInline.name);
-                localStorage.setItem("User",JSON.stringify(res.data));
-
-                vm.$router.push({
-                    name: 'home_index'
-                });
+                Util.setStorge("UserName",vm.formInline.name)
+                 Util.setStorge("User",JSON.stringify(res.data))
+               
+               
+                vm.initList()
+                vm.showLogin=false
+                 vm.showOrg=true
+              
             }else{
               vm.$Message.error('登陆失败!');
-             /*   vm.$router.push({
-                    name: 'home_index'
-                }); */
+            
             }
         
         
@@ -149,21 +250,33 @@ import axios from 'axios';
        },
        init(){
            let vm = this
+           let wrapper = document.getElementById("wrapper");
            let handler = document.getElementById("handler");
            let drag = document.getElementById("drag")
+           let login = document.getElementById("login-con")
            let drag_bg =  document.getElementById("drag_bg");
            let text =  document.getElementById("drag_text");
            let isMove = false
            let x 
           let maxWidth = 232;  //能滑动的最大间距
-          handler.addEventListener("mousedown",function(e){
-              
-              isMove = true;
+       
+         
+          function mousedown(e){
+               isMove = true;
               x = e.pageX - parseInt(handler.offsetLeft);
-             
-             
-          })
+              
+               handler.addEventListener("click",clicks,false)
+               console.log("增加")
+                handler.removeEventListener("click",clicks,false)
+                console.log("删除")
+                 document.addEventListener("mousemove",mousemove,false)
+                document.addEventListener("mouseup",mouseup,false)
+               
+          }
+            function clicks(){}
           function mousemove(e){
+             
+               console.log("过程")
               let _x = e.pageX - x;
              
               if (isMove) {
@@ -177,23 +290,12 @@ import axios from 'axios';
                 }
 
           }
-          /* handler.addEventListener("mousemove",function(e){
+          function mouseup(e){
               
-              let _x = e.pageX - x;
-              console.log(_x)
-              if (isMove) {
-                    if (_x > 0 && _x <= 232) {
-                        console.log("执行了")
-                        handler.style.left= _x+"px"
-                        drag_bg.style.width= _x+"px"
-                    } else if (_x > 232) {  //鼠标指针移动距离达到最大时清空事件
-                        dragOk();
-                    }
-                }
-          }) */
-          handler.addEventListener("mousemove",mousemove)
-          handler.addEventListener("mouseup",function(e){
-               
+              console.log("结束")
+               document.removeEventListener("mousemove",mousemove,false)
+                document.removeEventListener("mouseup",mouseup,false)
+                 //drag.removeEventListener("mousedown",mousedown,false)
                isMove = false;
                 let _x = e.pageX - x;
                 if (_x < maxWidth) { //鼠标松开时，如果没有达到最大距离位置，滑块就返回初始位置
@@ -213,25 +315,24 @@ import axios from 'axios';
                      },550); 
                     
                 }
-          })
+                
+          }
+        
+          drag.addEventListener("mousedown",mousedown,false)
+         /*  drag.addEventListener("mousemove",mousemove,false)
+          drag.addEventListener("mouseup",mouseup,false) */
+          
           function dragOk(){
              
               vm.isdrag=true
              
-              handler = "handler handler_ok_bg" 
+              //handler = "handler handler_ok_bg" 
               text.className ="drag_text"
               text.innerHTML="验证通过";
               text.style.color = "#fff"
-             /*  handler.style.left=232+"px"
-              drag_bg.style.width=232+"px" */
-              
-              /* handler.removeEventListener('mousedown',function(){
-                   event.preventDefault();  
-              });
-              handler.removeEventListener('mousemove',mousemove);
-              handler.removeEventListener('mouseup',function(){
-                  event.preventDefault();  
-              }); */
+              handler.style.left= maxWidth+"px"
+              drag_bg.style.width= maxWidth+"px"
+             
           }
 
 
@@ -239,7 +340,12 @@ import axios from 'axios';
     },
     mounted(){
         this.init();
-    }
+        const el = document.querySelector('.vue-canvas-nest-element')
+        this.cn = new CanvasNest(el, this.config)
+    },
+     beforeDestroy() {
+        this.cn.destroy()
+    },
   }
   
 </script>
@@ -260,6 +366,8 @@ header{
 }
 .login-con{
     position: absolute;
+    border-radius: 4px;
+    border:solid 1px #c3c3c3;
     right: 160px;
     top: 50%;
     transform: translateY(-60%);
@@ -269,10 +377,11 @@ header{
 .login{
 width: 100%;
 height: 100%;
-background-image: url('https://file.iviewui.com/iview-admin/login_bg.jpg');
+/* background-image: url('https://file.iviewui.com/iview-admin/login_bg.jpg'); */
 background-size: cover;
 background-position: center;
 position: relative;
+-moz-user-select: none; -khtml-user-select: none; user-select: none;
 }
 .slidetounlock{
     font-size: 12px;
@@ -329,5 +438,41 @@ position: relative;
 }
 .bg_move{
     transition: width .5s
+}
+.org{
+    position: absolute;
+    right: 160px;
+    top: 50%;
+    transform: translateY(-60%);
+    width: 300px;
+}
+.organization{
+    position:  absolute;left: 70%;top: 00px;
+}
+.organization-choose{
+    text-align: center; background-color: #fff;
+}
+.organization-choose-item:hover{
+    background-color: #2d8cf0;
+    color:#fff
+}
+.organization-choose-item-content{
+   text-align: left;
+    margin-left: 50px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.fade-enter-active {
+  transition: all .2s ease;
+}
+.fade-leave-active {
+  transition: all .2s ease;
+}
+.fade-enter, .slide-fade-leave-to {
+  transform: translateY(100px);
+  opacity: 0;
+}
+.mr10{
+    margin-right: 10px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div @click="lockScreen" class="lock-screen-btn-con">
+    <div @click="lockScreen" class="lock-screen-btn-con"  style="width: 20px;display: inline-block;margin-right: 10px;">
         <Tooltip content="锁屏" placement="bottom">
             <Icon type="locked" :size="20"></Icon>
         </Tooltip>
@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import Util from '@/libs/util';
 //import Cookies from 'js-cookie';
 const setLockBackSize = () => {
     let x = document.body.clientWidth;
@@ -29,6 +30,8 @@ export default {
             lockScreenBack.style.zIndex = 10000;
             lockScreenBack.style.boxShadow = '0 0 0 ' + this.lockScreenSize + 'px #667aa6 inset';
             this.showUnlock = true;
+            //console.log("我要锁屏")
+              Util.setStorge("locking","locking");
            // Cookies.set('last_page_name', this.$route.name); // 本地存储锁屏之前打开的页面以便解锁后打开
             setTimeout(() => {
                 lockScreenBack.style.transition = 'all 0s';
@@ -60,6 +63,7 @@ export default {
         this.lockScreenSize = size;
         lockScreenBack.style.transition = 'all 3s';
         lockScreenBack.style.width = lockScreenBack.style.height = size + 'px';
+      
     }
 };
 </script>

@@ -19,7 +19,7 @@ export const loginRouter ={
 export const locking = {
   path: '/locking',
   name: 'locking',
-  component: () => import('@/views/lockscreen/components/locking-page.vue')
+  component: () => import('@/components/lockscreen/components/locking-page.vue')
 };
 export const testApi = {
     path: '/testApi',

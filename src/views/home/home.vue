@@ -1,8 +1,8 @@
 <template>
     <div class="home-main center">
         
-        <div v-if="organization">
-            <Col :md="12" :lg="24" :style="{marginBottom: '10px'}">
+        <div style="width:400px">
+            
                         <Card>
                             <Row type="flex" class="user-infor">
                                 <Col span="8">
@@ -30,20 +30,13 @@
                                 <Col span="16" class="padding-left-8">北京</Col>
                             </Row>
                         </Card>
-                    </Col>
+                   
         </div>
-        <div v-if="!organization">
-           <div v-for="(item,index) in list" :key="index" class="organization-choose">
-               <div @click="chooseO(item.org_name,item.org_id)" class="organization-choose-item">
-                   <div class="organization-choose-item-content">{{item.org_name}}</div>
-              </div>
-               
-           </div>
-        </div>
+       
     </div>
 </template>
 <script>
-import axios from 'axios';
+import Util from '@/libs/util';
   export default{
     name:'home',
     data(){
@@ -54,22 +47,21 @@ import axios from 'axios';
     },
     computed:{
         username(){
-                return localStorage.getItem("UserName")
+            console.log("")
+                return Util.getStorge("UserName")
             },
         last_login(){
-            return JSON.parse(localStorage.getItem("User")).jyau_content.jyau_resData[0].last_login
+            return JSON.parse(Util.getStorge("User")).jyau_content.jyau_resData[0].last_login
         },
         org(){
-            return localStorage.getItem("organization").name
+            return Util.getStorge("organization").name
         }
     },
     methods:{
         init(){
-            
             let vm = this
-            vm.list = JSON.parse(localStorage.getItem("User")).jyau_content.jyau_resData[0].org_list
-
-            if(localStorage.getItem("organization")){
+            vm.list = JSON.parse(Util.getStorge("User")).jyau_content.jyau_resData[0].org_list
+            if(Util.getStorge("organization")){
                 vm.organization = true
             }
             let req = {
@@ -85,7 +77,7 @@ import axios from 'axios';
                         }
                     }
                 }
-            axios.post('api/emporg',req).then(function(res){
+            Util.axios.post('api/emporg',req).then(function(res){
                 console.log(res.data)
             }).catch(function(e){
                 console.log(e)
@@ -96,7 +88,7 @@ import axios from 'axios';
             let obj ={}
             obj.name = name
             obj.id = id
-            localStorage.setItem("organization",JSON.stringify(obj))
+            Util.setStorge("organization",JSON.stringify(obj))
             this.organization = true
             let vm = this
             let req = {
@@ -106,7 +98,7 @@ import axios from 'axios';
                         "org_id": id
                     }],
                     "jyau_pubData": {
-                        "operator_id": JSON.parse(localStorage.getItem("User")).jyau_content.jyau_resData[0].operator_id,
+                        "operator_id": JSON.parse(Util.getStorge("User")).jyau_content.jyau_resData[0].operator_id,
                         "account_id": "systemman",
                         "ip_address": "10.2.0.116",
                         "system_id": "10909"
@@ -114,7 +106,7 @@ import axios from 'axios';
                 }
             }
             console.log("req",JSON.stringify(req))
-            axios.post("api/menuAuth/queryOperatorMenu",req).then(function(res){
+            Util.axios.post("api/menuAuth/queryOperatorMenu",req).then(function(res){
                 console.log(res.data.jyau_content.jyau_resData[0].multi_menuList)
                  let list =res.data.jyau_content.jyau_resData[0].multi_menuList
                     let menuList = {}

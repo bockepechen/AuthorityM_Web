@@ -359,11 +359,11 @@ import axios from 'axios'
             this.currentRoleClone.role_name=""
             setTimeout(function(){
                 vm.orgShow=false
-            },400)
+            },250)
              setTimeout(function(){
                vm.setCurrentRole(id,name)
                 vm.orgShow=true
-            },800)
+            },500)
              
           
       },
@@ -418,19 +418,21 @@ import axios from 'axios'
           
           return
         }
-        this.currentMenuClone=""
+         vm.currentMenuClone=""
          setTimeout(function(){
             vm.orgShow=false
-         },300)
+           
+         },250)
+        
           setTimeout(function(){
            vm.roleShow=false
-         },600)
+         },500)
           setTimeout(function(){
             vm.roleShow=true
-         },900)
-         /*  this.orgShow=false
-          this.roleShow=false
-         this.roleShow=true */
+             
+         },750)
+         
+         
          
         
       },

@@ -22,116 +22,94 @@
     }
 </style>
 <template>
-    <div class="layout">
-        <!-- <Sider :style="{position: 'fixed', height: '100vh', left: 0, overflow: 'auto'}">
-            <Menu :active-name='active' theme="dark" width="auto" :open-names="open" ref="leftMenu">
-                <Submenu name="1">
-                    <template slot="title">
-                        <Icon type="ios-navigate"></Icon>
-                        公司信息管理
-                    </template>
-                  
-                    <MenuItem name="1-1"><router-link :to="{ path: '/company/list'}" style="color:#fff">公司管理</router-link></MenuItem>
-                   
-                </Submenu>
-                <Submenu name="2">
-                    <template slot="title">
-                        <Icon type="ios-keypad"></Icon>
-                       权限管理
-                    </template>
-                    <MenuItem name="2-1"><router-link :to="{ path: '/authority/listrole'}" style="color:#fff">角色管理</router-link></MenuItem>
-                     <MenuItem name="2-2"><router-link :to="{ path: '/authority/listjob'}" style="color:#fff">岗位管理</router-link></MenuItem>
-                   
-                </Submenu>
-                 <Submenu name="3">
-                    <template slot="title">
-                        <Icon type="ios-keypad"></Icon>
-                       配置管理
-                    </template>
-                    <MenuItem name="3-1"><router-link :to="{ path: '/menu/list'}" style="color:#fff">菜单管理</router-link></MenuItem>
-                    
-                   
-                </Submenu>
-               
-            </Menu>
-        </Sider> -->
-        <div style="    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
-    flex: 0 0 200px;
-    position: fixed;
-    height: 100vh;
-    left: 0px;
-    overflow: auto;
-    background: #495060;
-    transition: all .2s ease-in-out;">
-            <shrinkable-menu
-             @on-change="handleSubmenuChange"
-             :menu-list="menuLists"
-        >
-         </shrinkable-menu>
+    <div class="layout " >
+        
+        <div class="leftMenu">
+            <shrinkable-menu  @on-change="handleSubmenuChange"  :menu-list="menuLists" >
+            </shrinkable-menu>
         </div>
         
             
        
         <Layout :style="{marginLeft: '200px'}">
             <Header :style="{background: '#fff', boxShadow: '0 2px 3px 2px rgba(0,0,0,.1)'}">
-                <div style="height: 64px;overflow-y: hidden;position: relative;">
+                <div class="message">
                        <ul style="position: absolute;" id="list">
-                           <li @click="info(item,index)" v-for="(item,index) in messageList" :key="index">{{item}}</li>
+                           <li @click="info(item,index)" v-for="(item,index) in messageList" :key="index" class="message-item">{{item.msgContent|capitalize}}</li>
                           
                       </ul>    
                 </div>
             </Header>
                     
             <div style="position: absolute;right: 0;top: 20px;width: 300px;">
-                <span @click="fullscreeen(value)">全屏</span>
-                <span @click="lockscreen()">锁屏</span>
-                <div style="width: 20px;display: inline-block;"><lock-screen></lock-screen></div>
-                <span>{{username}}</span>
-                <span @click="logout()">退出</span>
-                
+              
+                <full-screen></full-screen>
+                <lock-screen></lock-screen>
+             
+              <!--   <div style="display: inline-block;margin-right: 10px;">{{username}}</div>  -->
+                <logout v-on:logout="logouts"></logout>
+                   <div  style="position: absolute;width: 20px;display: inline-block;left: 70px;top: -8px;">
+                        <Tooltip :content="username" placement="bottom">
+                             <img style="height: 32px;border-radius: 16px;" src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3448484253,3685836170&amp;fm=27&amp;gp=0.jpg">
+                        </Tooltip>
+                </div>
 
             </div>
             <div style="background-color:#e3dfdf">
                 <tags-page-opened ></tags-page-opened>
             </div>
-                <div style="padding: 20px;">
-                     
-                        
-                            <router-view></router-view>
-                        
-                   
-
-                </div>
+            <div style="padding: 20px;">
+                <router-view></router-view>
+            </div>
                
            
         </Layout>
+         <Modal
+            v-model="modal"
+            title="消息"
+            @on-ok="ok"
+            @on-cancel="cancel">
+            <p>{{message}}</p>
+        
+        </Modal>
     </div>
 </template>
 <script>
  const url ="wss://authoritymserv.jiayecaifu.com:8023/AuthorityM_Serv/websocket/" 
 //const url ="ws://10.2.0.101:8182/AuthorityM_Serv/websocket/";
 // const url ="ws://10.2.0.155:8199/AuthorityM_Serv/websocket/" 
-var websocket
-import axios from 'axios';
- import lockScreen from './lockscreen/lockscreen.vue';
- import tagsPageOpened from './lockscreen/tags-page-opened.vue';
- import shrinkableMenu from '@/components/shrinkable-menu/menu.vue';
+  var websocket
+  import Util from '@/libs/util';
+  
+  import lockScreen from '@/components/lockscreen/lockscreen.vue';
+  import logout from '@/components/logout/logout.vue';
+  import fullScreen from '@/components/fullscreen/fullscreen.vue';
+  import shrinkableMenu from '@/components/shrinkable-menu/menu.vue';
+  import tagsPageOpened from '@/components/tagsPageOpened/tagsPageOpened.vue';
     export default {
         name:'mains',
         components: {
             lockScreen,
             tagsPageOpened,
-            shrinkableMenu
+            shrinkableMenu,
+            logout,
+            fullScreen
         },
         data(){
             return{
+                isFullScreen: false,
                 value:  false,
                 open: [],
                 active: '1-1',
                 menuList:[],
-                messageList:[]
+                messageList:[],
+                modal:false,
+                message:"",
+                cn: '',
+                config: {
+                    color: '255,255,255',
+                    count: 200,
+                }
             }
         },
         computed: {
@@ -142,42 +120,25 @@ import axios from 'axios';
                 return this.$store.state.app.menuList
             },
            username(){
-                return localStorage.getItem("UserName")
+                return  Util.getStorge("UserName")
+            }
+        },
+        filters:{
+            capitalize:function(value){
+                return value.replace(/<[^>]+>/g,"")
             }
         },
         methods:{
-            
-            fullscreeen(value){
-               let main = document.body;
-            if (this.value) {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                    this.value = false
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                    this.value = false
-                } else if (document.webkitCancelFullScreen) {
-                    document.webkitCancelFullScreen();
-                    this.value = false
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                    this.value = false
-                }
-            } else {
-                if (main.requestFullscreen) {
-                    main.requestFullscreen();
-                    this.value = true
-                } else if (main.mozRequestFullScreen) {
-                    main.mozRequestFullScreen();
-                     this.value = true
-                } else if (main.webkitRequestFullScreen) {
-                    main.webkitRequestFullScreen();
-                     this.value = true
-                } else if (main.msRequestFullscreen) {
-                    main.msRequestFullscreen();
-                     this.value = true
-                }
-            }
+            ok(){
+
+            },
+            cancel(){
+
+            },
+            logouts(){
+                let vm =this
+                vm.closeWebScoket();
+                
             },
             lockscreen(){
                     this.$router.push({
@@ -189,7 +150,7 @@ import axios from 'axios';
             info(item,index){
                 this.$Notice.info({
                     title: '消息',
-                    desc: item,
+                    desc: item.msgContent ,
                     duration: 0
                 });
                 this.messageList.splice(index,1)
@@ -224,14 +185,6 @@ import axios from 'axios';
             showout(){
                 //this.$refs.div.$emit('showTag',"");
             },
-            logout(){
-                localStorage.removeItem("organization");
-                localStorage.removeItem("UserName");
-                 localStorage.removeItem("User");
-                 let array = []
-                  this.$store.commit("setMenuList",array)
-                this.$router.push({name:'login'})
-            },
             init(){
                  let vm = this
                 /*  axios.get('/api/menu')
@@ -243,24 +196,24 @@ import axios from 'axios';
                     .catch(function(error){
                     console.log(error)
                     })  */
-                    if(!JSON.parse(localStorage.getItem("organization"))){
+                    if(!JSON.parse(Util.getStorge("organization"))){
                         return
                     }
                     let req = {
                     "jyau_content": {
                         " jyau_reqData": [{
                             "req_no": "AU2018048201802051125231351",
-                            "org_id": JSON.parse(localStorage.getItem("organization")).id
+                            "org_id": JSON.parse(Util.getStorge("organization")).id
                         }],
                             "jyau_pubData": {
-                                "operator_id": JSON.parse(localStorage.getItem("User")).jyau_content.jyau_resData[0].operator_id,
+                                "operator_id": JSON.parse(Util.getStorge("User")).jyau_content.jyau_resData[0].operator_id,
                                 "account_id": "systemman",
                                 "ip_address": "10.2.0.116",
                                 "system_id": "10909"
                             }
                         }
                     }
-                    axios.post("api/menuAuth/queryOperatorMenu",req).then(function(res){
+                    Util.axios.post("api/menuAuth/queryOperatorMenu",req).then(function(res){
                         let list =res.data.jyau_content.jyau_resData[0].multi_menuList
                         let menuList = {}
                         menuList.name="菜单"
@@ -289,7 +242,7 @@ import axios from 'axios';
                     let vm = this
                 	if ('WebSocket' in window) {
                        // websocket = new WebSocket(url+"OP201805241441037573"+"/0/0");
-                          websocket = new WebSocket(url+JSON.parse(localStorage.getItem("User")).jyau_content.jyau_resData[0].operator_id+"/0/0");
+                          websocket = new WebSocket(url+JSON.parse(Util.getStorge("User")).jyau_content.jyau_resData[0].operator_id+"/0/0");
                     } else {
                     alert('当前浏览器 Not support websocket')
                     return;
@@ -299,12 +252,27 @@ import axios from 'axios';
                     }
                         websocket.onerror = function() {
                         console.log("WebSocket连接发生错误");
+                        
                         return;
                     };
                     //接收到消息的回调方法
                     websocket.onmessage = function(event) {
-                        vm.messageList.push(event.data)
-                        console.log("event",event,event.data);
+                        console.log("这是接受的消息",event.data)
+                        if(JSON.parse(event.data).msgType==1){
+                             vm.$Notice.info({
+                                title: '消息',
+                                desc: JSON.parse(event.data).msgContent ,
+                                duration: 0
+                            }); 
+                        }else if(JSON.parse(event.data).msgType==0){
+                             vm.messageList.push(JSON.parse(event.data))
+                             //console.log("event",vm.messageList,JSON.parse(event.data));
+                        }else if(JSON.parse(event.data).msgType==2){
+                            console.log("这是警告消息")
+                            vm.message=JSON.parse(event.data).msgContent
+                            vm.modal=true
+                        }
+                       
                     }
                     //连接关闭的回调方法
                     websocket.onclose = function() {
@@ -326,9 +294,12 @@ import axios from 'axios';
             this.messageInit()
              let vm = this
             window.onbeforeunload = function() {
-            vm.closeWebSocket();
+            vm.closeWebScoket();
             }
+             
+            
         },
+       
         watch:{
             '$route' (to){
                 let title = to.meta.title;
@@ -339,3 +310,26 @@ import axios from 'axios';
         
     }
 </script>
+<style scoped>
+.message{
+    height: 64px;overflow-y: hidden;position: relative;
+}
+.message-item{
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.leftMenu{
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    flex: 0 0 200px;
+    position: fixed;
+    height: 100vh;
+    left: 0px;
+    overflow: auto;
+    background: #495060;
+    transition: all .2s ease-in-out;
+}
+</style>

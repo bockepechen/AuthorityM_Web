@@ -5,34 +5,23 @@
             <Icon type="person"></Icon>
             机构管理
         </p>
-    <div style="text-align: center;
-    margin: 20px;">
-      <!-- <div style="display:flex;width:600px;">
-        <div style="flex:1">
-          <input type="text">
-          <span>图标</span>
-        </div>
-        <div style="flex:1">
-          <input type="text">
-          <span>图标</span>
-        </div>
-      </div> -->
+    <div class="home-head">
       <Input  icon="search" placeholder="输入机构代码搜索" v-model="code" @on-change="findCode()" style="width: 300px"></Input>
-      <Input  icon="search" placeholder="收入机构名称搜索" v-model="name" @on-change="findName()" style="width: 300px"></Input>
+       <Input  icon="search" placeholder="收入机构名称搜索" v-model="name" @on-change="findName()" style="width: 300px"></Input>
+       <Button type="primary" @click.stop="linkTO('insertorganization')">添加</Button>
     </div>
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
              <tr>
-                  <th><div>公司代码<Icon type="arrow-down-a"></Icon></div></th>
-                 <th><div>公司名称<Icon type="arrow-down-a"></Icon></div></th>
+                  <th><div>公司代码</div></th>
+                 <th><div>公司名称</div></th>
                  <th><div>操作</div></th>
              </tr>
             
              <tr v-for="(item,index) in list" :key="index" v-if="currentpage-10<=index&&index<currentpage">
                  
                  <td><div>
-                        <!-- <Input v-show="editable[index]==true" v-model="list[index]" @keyup.enter="changeEditable"></Input> -->
-                        <!--  <span v-show="editable[index]==false"  >{{item.org_code}}</span> -->
+                     
                         <span>{{item.org_code}}</span>
                     </div>
                  </td>
@@ -43,14 +32,14 @@
                     </div>
                    </td>
                  <td>
-                     <div  ref="div" @click.stop="showTag(item)"><!-- {{item.org_id}} -->点我呀</div>
+                     <div  ref="div" @click.stop="showTag(item)"><Icon type="settings" size="22"></Icon></div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
-                             <Button type="primary" @click.stop="linkTO('insertorganization',item.org_id)">添加</Button>
+                            
                              <Button type="primary" @click.stop="linkTO('updateorganization',item.org_id)">修改</Button>
                              <Button type="primary" @click.stop="destroy(item)">删除</Button>
-                             <Button type="primary" style="margin-top:5px" @click.stop="linkTO('otoUser',item.org_id)">添加机构人</Button>
+                             <Button type="primary" @click.stop="linkTO('otoUser',item.org_id)">添加机构人</Button>
                         </div>
                          
                      </div>
@@ -59,8 +48,7 @@
             
          </table>
     </div>
-    <div style="    margin-top: 30px;
-    text-align: center;">
+    <div class="page-content" >
       <Page :total="list.length" @on-change="pages" ></Page>
     </div>
     <Modal
@@ -222,7 +210,7 @@ z-Index:10
 z-Index:-999
 }
 .content{
-    width:270px;height:100px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 20px;position: absolute; 
+    width:270px;height:70px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 4px;position: absolute; 
 }
 .circle{
   bottom: 3px;
@@ -235,6 +223,13 @@ z-Index:-999
     border-color: transparent;
     border-style: solid;
     border-width: 6px;
+}
+.home-head{
+    text-align: center; margin: 20px;
+}
+.page-content{
+    margin-top: 30px;
+    text-align: center;
 }
 </style>
 

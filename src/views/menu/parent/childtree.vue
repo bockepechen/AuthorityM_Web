@@ -4,11 +4,13 @@
   <ul class="ul">
      
         <li :data-name="i.name" v-for="(i, m) in tree.children" :key="m" class="item"  :class="{'tree-hidden':!i.searchopen,'tree-block':i.expanded }">
-          <div  @click="toggle(m)" draggable='true' @dragstart='dragStart' @dragover='dragOver' @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend.prevent='dragEnd' :data-name="i.name" :data-id="i.id">{{i.name}}
+          <div style="cursor: pointer;cursor-move:pointer" @click="toggle(m)" draggable='true' @dragover="dragover" @dragstart='dragStart'  @dragenter='dragEnter' @dragleave='dragLeave' @drop='drop' @dragend.prevent='dragEnd' :data-name="i.name" :data-id="i.id">
+           <span v-if="!i.children" @click.stop="removeItem(i)" ><Icon type="ios-minus" style="color:red"></Icon></span> 
+            {{i.name}}
 
             <Icon type="arrow-right-b" v-if="(!i.open)&&i.children"></Icon>
             <Icon type="arrow-down-b" v-if="i.open&&i.children"></Icon>
-            <span v-if="!i.children" @click.stop="removeItem(i)" ><Icon type="ios-minus" style="color:red"></Icon></span>
+            
           </div>
          
      
@@ -163,9 +165,7 @@ let toData={}
               this.order(fromData,toData)
              
           },
-          dragOver(e){
-
-          },
+          
           order(from,to){
              let vm = this;
             // console.log("from,to",from,to)
@@ -276,6 +276,10 @@ let toData={}
            
 
             
+          },
+          dragover(e) {
+            e.preventDefault();
+            return true;
           },
           check(from,to){
               // console.log("from",from,"to",to)
@@ -409,7 +413,7 @@ li{
   list-style: none;
       margin: 5px;
 }
-/* li:hover{
+/* span:hover{
     background-color:#e3dfdf;
 } */
 .ul{

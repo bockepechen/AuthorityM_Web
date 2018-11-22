@@ -12,8 +12,8 @@
     <div>
       <table  cellspacing="0" cellpadding="0" border="0" style="table-layout:fixed;">
              <tr>
-                  <th><div>角色编号<Icon type="arrow-down-a"></Icon></div></th>
-                 <th><div>角色名称<Icon type="arrow-down-a"></Icon></div></th>
+                  <th><div>角色编号</div></th>
+                 <th><div>角色名称</div></th>
                  <th><div>热点操作区域</div></th>
              </tr>
             
@@ -31,7 +31,7 @@
                     </div>
                    </td>
                  <td>
-                     <div @click.stop="showTag(item)">点我呀</div>
+                     <div @click.stop="showTag(item)"><Icon type="settings" size="22"></Icon></div>
                      <div class="content" :class="{maxIndex: (item==choose),minIndex:!(item==choose) }"   :id='item'>
                          <div class="circle"></div>
                          <div style="margin-top:20px;">
@@ -191,7 +191,7 @@ z-Index:10
 z-Index:-999
 }
 .content{
-    width:270px;height:70px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 20px;position: absolute; 
+    width:270px;height:70px;background-color:#fff;box-shadow: 0 1px 6px rgba(0,0,0,.2);border-radius: 4px;position: absolute; 
 }
 .circle{
   bottom: 3px;
